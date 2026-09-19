@@ -1,0 +1,6 @@
+{
+  "name": "KB Academy Digital Platform",
+  "description": "A centralized operations and student-club management system for KB Academy students, teachers, and directors.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

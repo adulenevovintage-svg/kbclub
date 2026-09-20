@@ -20,7 +20,14 @@ import {
   XCircle,
   Clock3,
   Building2,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Check,
+  IdCard,
+  UserCheck,
+  LogOut,
+  ShieldCheck,
+  ArrowLeft
 } from 'lucide-react';
 
 interface StudentPortalProps {
@@ -31,6 +38,10 @@ interface StudentPortalProps {
   onSelectClub: (club: Club) => void;
   onOpenCharterModal: () => void;
   onDropClub: (registrationId: string) => void;
+  onOpenIdCard?: () => void;
+  onSwitchAccount?: () => void;
+  onAddToast?: (type: 'success' | 'warning' | 'info', title: string, message: string) => void;
+  onBackToLanding?: () => void;
 }
 
 export const StudentPortal: React.FC<StudentPortalProps> = ({
@@ -41,12 +52,28 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   onSelectClub,
   onOpenCharterModal,
   onDropClub,
+  onOpenIdCard,
+  onSwitchAccount,
+  onAddToast,
+  onBackToLanding,
 }) => {
   const [activeTab, setActiveTab] = useState<'catalog' | 'my-clubs' | 'schedule'>('catalog');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedDay, setSelectedDay] = useState<string>('All');
   const [onlyAvailable, setOnlyAvailable] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
+
+  const studentIdNumber = student.studentIdNumber || student.id;
+
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(studentIdNumber);
+    setCopiedId(true);
+    if (onAddToast) {
+      onAddToast('success', 'Student ID Copied', `Copied ${studentIdNumber} to clipboard.`);
+    }
+    setTimeout(() => setCopiedId(false), 3000);
+  };
 
   // Student's active registrations
   const myRegistrations = useMemo(() => {
@@ -132,32 +159,89 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
       {/* Student Welcome & Status Overview */}
       <div className="p-6 rounded-2xl bg-gradient-to-r from-[#14161f] via-[#12141a] to-[#0c0d10] border border-[#232730] shadow-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="flex items-start sm:items-center gap-4">
+            <div className="relative flex-shrink-0">
               <img 
                 src={student.avatarUrl} 
                 alt={student.name} 
                 className="w-16 h-16 rounded-2xl object-cover border-2 border-[#c5832b]/50 shadow-md"
               />
               <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded bg-[#c5832b] text-white text-[10px] font-bold">
-                Gr {student.grade}
+                Gr {student.grade || 11}{student.section ? `-${student.section}` : ''}
               </span>
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl font-bold text-white tracking-tight">{student.name}</h1>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-medium">
                   Active Scholar
                 </span>
+                {student.section && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium">
+                    Section {student.section}
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-zinc-400 mt-1">
+
+              {/* Student ID & Actions */}
+              <div className="flex items-center gap-3 mt-2 flex-wrap text-xs">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0a0b10] border border-amber-500/30 text-amber-300 font-mono">
+                  <span className="text-[10px] text-zinc-500 uppercase">ID:</span>
+                  <span className="font-bold text-emerald-400">{studentIdNumber}</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyId}
+                    className="ml-1 text-zinc-400 hover:text-white cursor-pointer"
+                    title="Copy Student ID"
+                  >
+                    {copiedId ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+
+                {onOpenIdCard && (
+                  <button
+                    type="button"
+                    onClick={onOpenIdCard}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 transition-colors cursor-pointer"
+                  >
+                    <IdCard className="w-3.5 h-3.5 text-amber-400" />
+                    <span>View Digital ID</span>
+                  </button>
+                )}
+
+                {onSwitchAccount && (
+                  <button
+                    type="button"
+                    onClick={onSwitchAccount}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-800 text-zinc-400 hover:text-amber-300 border border-zinc-700 transition-colors cursor-pointer"
+                    title="Switch or Register another student"
+                  >
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>Switch / Register Student</span>
+                  </button>
+                )}
+              </div>
+
+              <p className="text-xs text-zinc-400 mt-1.5">
                 KB Academy Co-Curricular Track &bull; {student.email}
               </p>
             </div>
           </div>
 
-          {/* Quick Metrics */}
-          <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+              {/* Quick Metrics */}
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+            {onBackToLanding && (
+              <button
+                type="button"
+                onClick={onBackToLanding}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1a1d27] hover:bg-[#252a3a] text-zinc-300 hover:text-white border border-[#2b3040] hover:border-[#c5832b] text-xs font-bold transition-all cursor-pointer shadow-sm group"
+                id="btn-student-portal-back-home"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-[#c5832b] group-hover:-translate-x-1 transition-transform" />
+                <span>Main Website</span>
+              </button>
+            )}
+
             <div className="px-4 py-2.5 rounded-xl bg-[#0c0d10] border border-[#232730]">
               <div className="text-xs text-zinc-400">Enrolled Clubs</div>
               <div className="text-lg font-bold text-white flex items-center gap-1.5 mt-0.5">
@@ -175,7 +259,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
 
             <button
               onClick={onOpenCharterModal}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-semibold transition-all shadow-md shadow-[#c5832b]/20"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-semibold transition-all shadow-md shadow-[#c5832b]/20 cursor-pointer"
               id="student-propose-charter-btn"
             >
               <PlusCircle className="w-4 h-4" />

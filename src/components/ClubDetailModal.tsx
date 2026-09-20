@@ -163,13 +163,13 @@ export const ClubDetailModal: React.FC<ClubDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Officer Board & Faculty Advisor */}
+          {/* Officer Board & Syndicate Logistics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 rounded-xl bg-[#0c0d10] border border-[#1f232c]">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Faculty Leadership</h4>
-              <div className="text-sm font-bold text-white">{club.advisorName}</div>
-              <div className="text-xs text-zinc-400">{club.advisorTitle}</div>
-              <div className="text-[11px] text-zinc-500 font-mono mt-1">{club.advisorEmail}</div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Student Leadership</h4>
+              <div className="text-sm font-bold text-white">{club.studentPresident}</div>
+              <div className="text-xs text-amber-400 font-medium">Club President & Founder</div>
+              <div className="text-[11px] text-zinc-400 font-mono mt-1">{club.room} &bull; {club.building}</div>
             </div>
 
             <div className="p-4 rounded-xl bg-[#0c0d10] border border-[#1f232c]">

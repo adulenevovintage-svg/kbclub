@@ -44,7 +44,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
             Register for {club.name}
           </h3>
           <p className="text-xs text-zinc-400 mt-1">
-            Faculty Advisor: {club.advisorName} &bull; Room {club.room}
+            Student President: {club.studentPresident} &bull; Room {club.room}
           </p>
         </div>
 
@@ -77,8 +77,16 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
           <div className="p-3.5 rounded-xl bg-[#161822] border border-[#232730] text-xs space-y-1.5">
             <div className="flex items-center justify-between text-zinc-400">
               <span>Applicant:</span>
-              <span className="text-white font-semibold">{student.name} (Grade {student.grade})</span>
+              <span className="text-white font-semibold">
+                {student.name} (Grade {student.grade || 11}{student.section ? `-${student.section}` : ''})
+              </span>
             </div>
+            {student.studentIdNumber && (
+              <div className="flex items-center justify-between text-zinc-400">
+                <span>Student ID:</span>
+                <span className="text-emerald-400 font-mono font-semibold">{student.studentIdNumber}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between text-zinc-400">
               <span>Required Student Dues:</span>
               <span className="text-white font-semibold">${club.duesPerSemester} (Billed via Bursar)</span>
@@ -86,7 +94,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
             <div className="flex items-center justify-between text-zinc-400">
               <span>Review Flow:</span>
               <span className="text-amber-400 font-semibold">
-                {requireAdvisorApproval ? 'Faculty Advisor Review' : 'Instant Automatic Enrollment'}
+                {requireAdvisorApproval ? 'Director & Officer Review' : 'Instant Automatic Enrollment'}
               </span>
             </div>
           </div>

@@ -11,7 +11,8 @@ import {
   Sparkles,
   ExternalLink,
   CalendarCheck,
-  CheckCircle2
+  CheckCircle2,
+  ArrowLeft
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -38,20 +39,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const currentUser = users[activeRole];
 
-  const roleMeta = {
+  const roleMeta: Record<string, { label: string; icon: any; badge: string; color: string; description: string }> = {
     student: {
       label: 'Student Portal',
       icon: GraduationCap,
       badge: 'Grade 11',
       color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
       description: 'Explore clubs, track memberships & proposal charters'
-    },
-    teacher: {
-      label: 'Faculty Advisor',
-      icon: BookOpen,
-      badge: 'STEM Division',
-      color: 'bg-[#c5832b]/15 text-[#e5a93c] border-[#c5832b]/30',
-      description: 'Review registrations, mark attendance & schedule'
     },
     director: {
       label: 'Student Life Director',
@@ -207,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </p>
                   </div>
 
-                  {(['student', 'teacher', 'director'] as UserRole[]).map((role) => {
+                  {(['student', 'director'] as UserRole[]).map((role) => {
                     const info = users[role];
                     const meta = roleMeta[role];
                     const RoleIcon = meta.icon;
@@ -262,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {currentView === 'landing' ? (
             <button
               onClick={() => setCurrentView('operations')}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-semibold transition-all shadow-md shadow-[#c5832b]/20"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-semibold transition-all shadow-md shadow-[#c5832b]/20 cursor-pointer"
               id="nav-enter-platform"
             >
               Launch Portal
@@ -271,11 +265,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           ) : (
             <button
               onClick={() => setCurrentView('landing')}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#191c24] hover:bg-[#232732] border border-[#2e3340] text-zinc-300 hover:text-white text-xs font-medium transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#191c24] hover:bg-[#252a36] border border-[#303648] hover:border-[#c5832b] text-zinc-200 hover:text-white text-xs font-bold transition-all cursor-pointer group shadow-sm"
               id="nav-view-showcase"
             >
-              <Compass className="w-3.5 h-3.5 text-[#c5832b]" />
-              Showcase
+              <ArrowLeft className="w-3.5 h-3.5 text-[#c5832b] group-hover:-translate-x-0.5 transition-transform" />
+              <span>Main Website</span>
             </button>
           )}
         </div>

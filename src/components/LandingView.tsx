@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserRole, Club, WebsiteContent, ClubCategory } from '../types';
+import { UserRole, Club, WebsiteContent, ClubCategory, Announcement } from '../types';
 import { 
   ArrowRight, 
   Sparkles, 
@@ -16,21 +16,23 @@ import {
   TrendingUp, 
   Clock, 
   MapPin, 
-  Compass,
-  Search,
-  ExternalLink,
-  Settings,
-  Edit3,
-  Save,
-  Plus,
-  Trash2,
-  Image as ImageIcon,
-  Lock,
-  Unlock,
-  CheckCircle2,
-  X
+  Compass, 
+  Search, 
+  ExternalLink, 
+  Settings, 
+  Edit3, 
+  Save, 
+  Plus, 
+  Trash2, 
+  Image as ImageIcon, 
+  Lock, 
+  Unlock, 
+  CheckCircle2, 
+  X, 
+  LogIn 
 } from 'lucide-react';
 import { PhotoEditModal } from './PhotoEditModal';
+import { AnnouncementsSection } from './AnnouncementsSection';
 
 interface LandingViewProps {
   onEnterRole: (role: UserRole) => void;
@@ -43,6 +45,9 @@ interface LandingViewProps {
   isAdminAuthenticated: boolean;
   setIsAdminAuthenticated: (val: boolean) => void;
   onAddToast: (type: 'success' | 'warning' | 'info', title: string, message: string) => void;
+  onOpenStudentAuth?: (mode?: 'register' | 'login') => void;
+  announcements?: Announcement[];
+  onUpdateAnnouncements?: (announcements: Announcement[]) => void;
 }
 
 export const LandingView: React.FC<LandingViewProps> = ({
@@ -56,6 +61,9 @@ export const LandingView: React.FC<LandingViewProps> = ({
   isAdminAuthenticated,
   setIsAdminAuthenticated,
   onAddToast,
+  onOpenStudentAuth,
+  announcements = [],
+  onUpdateAnnouncements = () => {},
 }) => {
   const fallbackLogoUrl = 'https://cdn.phototourl.com/free/2026-09-19-d8f0f13c-5886-4de1-b7ba-8996d63ce1a3.jpg';
   const kbLogoUrl = websiteContent?.kbLogoUrl || fallbackLogoUrl;
@@ -245,61 +253,79 @@ export const LandingView: React.FC<LandingViewProps> = ({
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl text-zinc-600 max-w-2xl mx-auto font-normal leading-relaxed mb-10">
-              Centralizing student club registration, faculty advisory reviews, room allocation governance, 
+              Centralizing student club registration, student leadership charters, room allocation governance, 
               and zero-collision scheduling into one unified digital system built for modern scholastic excellence.
             </p>
           </div>
 
           {/* 2 Interactive Stakeholder Portal Launch Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mb-8 text-left">
-            {/* Student Card */}
+            {/* Student Registration Card (Explore & Register: Registration & Account Creation Only) */}
             <div 
-              onClick={() => onEnterRole('student')}
-              className="group cursor-pointer p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-emerald-500 transition-all duration-200 hover:-translate-y-1 shadow-lg shadow-zinc-200/50 hover:shadow-emerald-500/10 flex flex-col justify-between"
-              id="hero-role-student"
+              onClick={() => {
+                if (onOpenStudentAuth) {
+                  onOpenStudentAuth('register');
+                } else {
+                  onEnterRole('student');
+                }
+              }}
+              className="group cursor-pointer p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-[#c5832b] transition-all duration-200 hover:-translate-y-1 shadow-lg shadow-zinc-200/50 hover:shadow-amber-500/10 flex flex-col justify-between"
+              id="hero-role-student-register"
             >
               <div>
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform shadow-xs">
+                <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-[#b46d1c] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform shadow-xs">
                   <GraduationCap className="w-6 h-6" />
                 </div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-emerald-700 font-bold">Student Portal</span>
+                  <span className="text-xs uppercase tracking-wider text-[#a06014] font-bold">Student Registration</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold border border-amber-300/60">
+                    High School (Grades 9–12)
+                  </span>
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900 group-hover:text-emerald-700 transition-colors">
+                <h3 className="text-lg font-bold text-zinc-900 group-hover:text-[#b46d1c] transition-colors">
                   Explore & Register
                 </h3>
                 <p className="text-xs text-zinc-600 mt-2 leading-relaxed">
-                  Browse accredited syndicates, check schedule clashes instantly, view active syllabi, and submit charter proposals.
+                  Create your official High School student profile (Grades 9–12), register your legal first and father’s name, verify your Gmail, and generate your KB Student ID.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-emerald-700 group-hover:text-emerald-800">
-                <span>Enter Student Workspace</span>
+              <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-[#a06014] group-hover:text-[#834d0b]">
+                <span>Register & Create Account</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
               </div>
             </div>
 
-            {/* Teacher / Advisor Card - Updated to Track Record & Club Status */}
+            {/* Log in Card (Sign In for Students) */}
             <div 
-              onClick={() => onEnterRole('teacher')}
-              className="group cursor-pointer p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-[#c5832b] transition-all duration-200 hover:-translate-y-1 shadow-lg shadow-zinc-200/50 hover:shadow-amber-500/10 flex flex-col justify-between"
-              id="hero-role-teacher"
+              onClick={() => {
+                if (onOpenStudentAuth) {
+                  onOpenStudentAuth('login');
+                } else {
+                  onEnterRole('student');
+                }
+              }}
+              className="group cursor-pointer p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-emerald-500 transition-all duration-200 hover:-translate-y-1 shadow-lg shadow-zinc-200/50 hover:shadow-emerald-500/10 flex flex-col justify-between"
+              id="hero-role-login"
             >
               <div>
-                <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-[#b46d1c] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform shadow-xs">
-                  <BookOpen className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform shadow-xs">
+                  <LogIn className="w-6 h-6" />
                 </div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs uppercase tracking-wider text-[#a06014] font-bold">Faculty Advisor</span>
+                  <span className="text-xs uppercase tracking-wider text-emerald-700 font-bold">Student Portal Sign In</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300/60">
+                    Registered Students
+                  </span>
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900 group-hover:text-[#b46d1c] transition-colors">
-                  Track Record & Club Status
+                <h3 className="text-lg font-bold text-zinc-900 group-hover:text-emerald-700 transition-colors">
+                  Log in
                 </h3>
                 <p className="text-xs text-zinc-600 mt-2 leading-relaxed">
-                  Track student attendance records, monitor real-time club member status, verify rosters, and oversee syndicate health.
+                  Sign in with your Student ID number or password to access your registered clubs, track attendance, and view student credentials.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-[#a06014] group-hover:text-[#834d0b]">
-                <span>Track Record & Club Status</span>
+              <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-emerald-700 group-hover:text-emerald-800">
+                <span>Log In to Student Portal</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
               </div>
             </div>
@@ -551,8 +577,25 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
       </section>
 
-      {/* 3. Featured Clubs Directory Preview (DIRECT IN-PAGE EDITABLE) */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-zinc-200">
+      {/* 2.5 Dynamic Academy Announcements & News Section (DIRECT IN-PAGE EDITABLE IN ADMIN MODE) */}
+      <AnnouncementsSection
+        announcements={announcements}
+        onUpdateAnnouncements={onUpdateAnnouncements}
+        canLiveEdit={canLiveEdit}
+        onAddToast={onAddToast}
+        onOpenStudentAuth={onOpenStudentAuth}
+        onExploreClubs={() => {
+          const catalogEl = document.getElementById('co-curricular-catalog-section');
+          if (catalogEl) {
+            catalogEl.scrollIntoView({ behavior: 'smooth' });
+          } else if (onOpenStudentAuth) {
+            onOpenStudentAuth('register');
+          }
+        }}
+      />
+
+      {/* 3. Featured Clubs Directory Preview / Co-Curricular Catalog (DIRECT IN-PAGE EDITABLE) */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-zinc-200" id="co-curricular-catalog-section">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div>
             <div className="text-xs font-bold uppercase tracking-wider text-[#b46d1c]">
@@ -579,11 +622,17 @@ export const LandingView: React.FC<LandingViewProps> = ({
             )}
 
             <button
-              onClick={() => onEnterRole('student')}
+              onClick={() => {
+                if (onOpenStudentAuth) {
+                  onOpenStudentAuth('register');
+                } else {
+                  onEnterRole('student');
+                }
+              }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-xs font-bold text-white transition-colors shadow-sm cursor-pointer"
               id="btn-landing-open-student-dir"
             >
-              <span>Open Full Student Directory</span>
+              <span>Explore & Register</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

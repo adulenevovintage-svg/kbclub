@@ -24,7 +24,8 @@ import {
   MapPin,
   ClipboardCheck,
   Building2,
-  Shield
+  Shield,
+  ArrowLeft
 } from 'lucide-react';
 
 interface TeacherPortalProps {
@@ -38,6 +39,7 @@ interface TeacherPortalProps {
   onWaitlistRegistration: (regId: string) => void;
   onSaveAttendanceSession: (session: MeetingAttendanceSession) => void;
   onPostAnnouncement: (announcement: Omit<Announcement, 'id' | 'date'>) => void;
+  onBackToLanding?: () => void;
 }
 
 export const TeacherPortal: React.FC<TeacherPortalProps> = ({
@@ -51,6 +53,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   onWaitlistRegistration,
   onSaveAttendanceSession,
   onPostAnnouncement,
+  onBackToLanding,
 }) => {
   // Find clubs advised by this teacher
   const advisedClubs = clubs.filter(c => 
@@ -183,21 +186,35 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
             </div>
           </div>
 
-          {/* Advised Club Switcher */}
-          <div className="flex items-center gap-3 bg-[#0c0d10] p-2 rounded-xl border border-[#232730]">
-            <span className="text-xs text-zinc-400 pl-2">Active Syndicate:</span>
-            <select
-              value={selectedClubId}
-              onChange={(e) => setSelectedClubId(e.target.value)}
-              className="bg-[#181a22] text-xs font-semibold text-white px-3 py-1.5 rounded-lg border border-[#2a2e3a] focus:outline-none focus:border-[#c5832b]"
-              id="teacher-club-selector"
-            >
-              {advisedClubs.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+          {/* Advised Club Switcher & Back Button */}
+          <div className="flex items-center gap-3 flex-wrap">
+            {onBackToLanding && (
+              <button
+                type="button"
+                onClick={onBackToLanding}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1a1d27] hover:bg-[#252a3a] text-zinc-300 hover:text-white border border-[#2b3040] hover:border-[#c5832b] text-xs font-bold transition-all cursor-pointer shadow-sm group"
+                id="btn-teacher-portal-back-home"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-[#c5832b] group-hover:-translate-x-1 transition-transform" />
+                <span>Main Website</span>
+              </button>
+            )}
+
+            <div className="flex items-center gap-3 bg-[#0c0d10] p-2 rounded-xl border border-[#232730]">
+              <span className="text-xs text-zinc-400 pl-2">Active Syndicate:</span>
+              <select
+                value={selectedClubId}
+                onChange={(e) => setSelectedClubId(e.target.value)}
+                className="bg-[#181a22] text-xs font-semibold text-white px-3 py-1.5 rounded-lg border border-[#2a2e3a] focus:outline-none focus:border-[#c5832b]"
+                id="teacher-club-selector"
+              >
+                {advisedClubs.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 

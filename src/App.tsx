@@ -7,7 +7,9 @@ import {
   Announcement, 
   MeetingAttendanceSession, 
   SystemSettings,
-  WebsiteContent
+  WebsiteContent,
+  UserProfile,
+  StudentAccount
 } from './types';
 import { 
   INITIAL_USERS, 
@@ -17,7 +19,8 @@ import {
   INITIAL_ANNOUNCEMENTS, 
   INITIAL_ATTENDANCE_SESSIONS, 
   INITIAL_SYSTEM_SETTINGS,
-  INITIAL_WEBSITE_CONTENT
+  INITIAL_WEBSITE_CONTENT,
+  INITIAL_STUDENT_ACCOUNTS
 } from './data/mockData';
 import { Navbar } from './components/Navbar';
 import { LandingView } from './components/LandingView';
@@ -29,22 +32,64 @@ import { RegistrationModal } from './components/RegistrationModal';
 import { NewCharterModal } from './components/NewCharterModal';
 import { NotificationDrawer } from './components/NotificationDrawer';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { StudentAuthModal } from './components/StudentAuthModal';
+import { StudentIDCardModal } from './components/StudentIDCardModal';
 import { Toast, ToastMessage } from './components/Toast';
+import { ArrowLeft, Home, Compass } from 'lucide-react';
 
 export default function App() {
   // 1. Navigation and Role View States
   const [currentView, setCurrentView] = useState<'landing' | 'operations'>('landing');
   const [activeRole, setActiveRole] = useState<UserRole>('student');
 
-  // 2. Persistent Domain State with localStorage
-  const [users] = useState(INITIAL_USERS);
+  // 2. Student Accounts & Authentication State
+  const [studentAccounts, setStudentAccounts] = useState<StudentAccount[]>(() => {
+    try {
+      const saved = localStorage.getItem('kb_academy_v2_student_accounts');
+      if (saved) return JSON.parse(saved);
+      return INITIAL_STUDENT_ACCOUNTS;
+    } catch {
+      return INITIAL_STUDENT_ACCOUNTS;
+    }
+  });
+
+  const [currentStudentId, setCurrentStudentId] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('kb_academy_v2_active_student_id');
+      if (saved) return saved;
+      return INITIAL_STUDENT_ACCOUNTS[0]?.id || 'KB-2026-11B-10492';
+    } catch {
+      return INITIAL_STUDENT_ACCOUNTS[0]?.id || 'KB-2026-11B-10492';
+    }
+  });
+
+  // Current active student profile
+  const activeStudentAccount = studentAccounts.find(a => a.id === currentStudentId) || studentAccounts[0] || INITIAL_STUDENT_ACCOUNTS[0];
+
+  // Dynamic user dictionary
+  const users: Record<string, UserProfile> = {
+    ...INITIAL_USERS,
+    student: {
+      id: activeStudentAccount.id,
+      name: activeStudentAccount.fullName,
+      fatherName: activeStudentAccount.fatherName,
+      section: activeStudentAccount.section,
+      studentIdNumber: activeStudentAccount.studentIdNumber,
+      role: 'student',
+      grade: activeStudentAccount.grade,
+      email: activeStudentAccount.email,
+      title: `Junior Scholar (Grade ${activeStudentAccount.grade}-${activeStudentAccount.section})`,
+      avatarUrl: activeStudentAccount.avatarUrl || INITIAL_USERS.student.avatarUrl,
+    }
+  };
 
   const [clubs, setClubs] = useState<Club[]>(() => {
     try {
       const saved = localStorage.getItem('kb_academy_v2_clubs');
-      if (saved) return JSON.parse(saved);
-      // Clear legacy storage if present
-      localStorage.removeItem('kb_academy_clubs');
+      if (saved) {
+        const parsed: Club[] = JSON.parse(saved);
+        return parsed.map(c => (!c.advisorName || c.advisorName === 'Faculty Advisor' || c.id === 'club-robotics' || c.id === 'club-aerospace') ? { ...c, advisorName: 'Mr. Fasil', advisorEmail: 'fasil@kbacademy.edu', advisorTitle: 'Faculty Advisor' } : c);
+      }
       return INITIAL_CLUBS;
     } catch {
       return INITIAL_CLUBS;
@@ -76,8 +121,25 @@ export default function App() {
   const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
     try {
       const saved = localStorage.getItem('kb_academy_v2_announcements');
-      if (saved) return JSON.parse(saved);
-      localStorage.removeItem('kb_academy_announcements');
+      if (saved) {
+        const parsed: Announcement[] = JSON.parse(saved);
+        return parsed.map(a => {
+          if (a.id === 'ann-2' || a.title?.includes('Regional Qualifier') || a.title?.includes('Regional Question and Answer') || a.title?.includes('Lab 204') || a.badgeText?.includes('LAB DISPATCH') || a.badgeText?.includes('REGIONAL CHAMPIONS') || a.clubId === 'club-robotics') {
+            return {
+              ...a,
+              title: 'Regional Question and Answer Champions ',
+              summary: 'Our proud and outstanding students remarkable achievements , We are proud of you ',
+              content: 'Our proud and outstanding students remarkable achievements , We are proud of you . Congratulations to all participating scholars and faculty mentors on bringing home the championship title.',
+              coverImage: 'https://cdn.phototourl.com/free/2026-09-20-27a9f26b-61b4-4adf-8ed5-16e5600b89d1.jpg',
+              authorName: 'Mr. Fasil',
+              authorRole: 'Faculty Advisor',
+              badgeText: '🏆 REGIONAL CHAMPIONS',
+              category: 'Championship'
+            };
+          }
+          return a;
+        });
+      }
       return INITIAL_ANNOUNCEMENTS;
     } catch {
       return INITIAL_ANNOUNCEMENTS;
@@ -120,14 +182,59 @@ export default function App() {
   // Admin mode is strictly INACTIVE by default, reserved ONLY for users who input the password via the settings icon
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
 
-  // Clear any legacy persisted admin session so it is never active by default
+  // Student Auth Modal state & Student ID card modal state
+  const [isStudentAuthModalOpen, setIsStudentAuthModalOpen] = useState(false);
+  const [studentAuthInitialMode, setStudentAuthInitialMode] = useState<'register' | 'login'>('register');
+  const [isStudentIDCardModalOpen, setIsStudentIDCardModalOpen] = useState(false);
+
+  // Clear any legacy persisted admin session and ensure updated image & faculty advisor
   useEffect(() => {
     try {
       localStorage.removeItem('kb_academy_admin_authenticated');
     } catch {
       // ignore
     }
+
+    setAnnouncements(prev => prev.map(a => {
+      if (a.id === 'ann-2' || a.title?.includes('Regional Qualifier') || a.title?.includes('Regional Question and Answer') || a.title?.includes('Lab 204') || a.badgeText?.includes('LAB DISPATCH') || a.badgeText?.includes('REGIONAL CHAMPIONS') || a.clubId === 'club-robotics') {
+        return {
+          ...a,
+          title: 'Regional Question and Answer Champions ',
+          summary: 'Our proud and outstanding students remarkable achievements , We are proud of you ',
+          content: 'Our proud and outstanding students remarkable achievements , We are proud of you . Congratulations to all participating scholars and faculty mentors on bringing home the championship title.',
+          coverImage: 'https://cdn.phototourl.com/free/2026-09-20-27a9f26b-61b4-4adf-8ed5-16e5600b89d1.jpg',
+          authorName: 'Mr. Fasil',
+          authorRole: 'Faculty Advisor',
+          badgeText: '🏆 REGIONAL CHAMPIONS',
+          category: 'Championship'
+        };
+      }
+      return a;
+    }));
+
+    setClubs(prev => prev.map(c => {
+      if (!c.advisorName || c.advisorName === 'Faculty Advisor' || c.id === 'club-robotics' || c.id === 'club-aerospace') {
+        return {
+          ...c,
+          advisorName: 'Mr. Fasil',
+          advisorEmail: 'fasil@kbacademy.edu',
+          advisorTitle: 'Faculty Advisor'
+        };
+      }
+      return c;
+    }));
   }, []);
+
+  // Save student state
+  useEffect(() => {
+    localStorage.setItem('kb_academy_v2_student_accounts', JSON.stringify(studentAccounts));
+  }, [studentAccounts]);
+
+  useEffect(() => {
+    if (currentStudentId) {
+      localStorage.setItem('kb_academy_v2_active_student_id', currentStudentId);
+    }
+  }, [currentStudentId]);
 
   // Save to local storage on change
   useEffect(() => {
@@ -191,6 +298,27 @@ export default function App() {
     setActiveRole(role);
     setCurrentView('operations');
     addToast('info', 'Workspace Loaded', `Switched to ${users[role].name} (${role.toUpperCase()}).`);
+  };
+
+  // Student Registration & Auth handlers
+  const handleOpenStudentAuth = (mode: 'register' | 'login' = 'register') => {
+    setStudentAuthInitialMode(mode);
+    setIsStudentAuthModalOpen(true);
+  };
+
+  const handleRegisterSuccess = (newAccount: StudentAccount) => {
+    setStudentAccounts(prev => [newAccount, ...prev.filter(a => a.id !== newAccount.id)]);
+    setCurrentStudentId(newAccount.id);
+    setActiveRole('student');
+    setCurrentView('operations');
+    addToast('success', 'Profile Activated', `Welcome to the Student Portal, ${newAccount.fullName}!`);
+  };
+
+  const handleLoginSuccess = (account: StudentAccount) => {
+    setCurrentStudentId(account.id);
+    setActiveRole('student');
+    setCurrentView('operations');
+    addToast('success', 'Welcome Back', `Authenticated as ${account.fullName} (${account.studentIdNumber}).`);
   };
 
   // Student registers for a club
@@ -547,9 +675,40 @@ export default function App() {
             isAdminAuthenticated={isAdminAuthenticated}
             setIsAdminAuthenticated={setIsAdminAuthenticated}
             onAddToast={addToast}
+            onOpenStudentAuth={handleOpenStudentAuth}
+            announcements={announcements}
+            onUpdateAnnouncements={setAnnouncements}
           />
         ) : (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+            {/* Highly Prominent Back to Main Website Bar */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-[#14161f] border border-[#262b3a] shadow-md">
+              <button
+                type="button"
+                onClick={() => setCurrentView('landing')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-bold transition-all shadow-md shadow-amber-950/30 cursor-pointer group"
+                id="btn-global-back-to-main-website"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                <span>← Back to Main Website</span>
+              </button>
+
+              <div className="flex items-center gap-3 text-xs text-zinc-400">
+                <span>Active Portal:</span>
+                <span className="px-2.5 py-1 rounded-lg bg-[#0c0d12] border border-[#2b3040] text-amber-300 font-bold uppercase text-[11px]">
+                  {activeRole === 'student' ? 'High School Student Portal' : activeRole === 'teacher' ? 'Faculty Advisor Portal' : 'Student Life Director'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCurrentView('landing')}
+                  className="hidden sm:inline-flex items-center gap-1 text-zinc-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
+                >
+                  <Compass className="w-3.5 h-3.5 text-[#c5832b]" />
+                  <span>Return to Public Showcase</span>
+                </button>
+              </div>
+            </div>
+
             {activeRole === 'student' && (
               <StudentPortal
                 student={users.student}
@@ -559,6 +718,10 @@ export default function App() {
                 onSelectClub={(club) => setSelectedClubForDetail(club)}
                 onOpenCharterModal={() => setIsNewCharterModalOpen(true)}
                 onDropClub={handleDropClub}
+                onOpenIdCard={() => setIsStudentIDCardModalOpen(true)}
+                onSwitchAccount={() => handleOpenStudentAuth('register')}
+                onAddToast={addToast}
+                onBackToLanding={() => setCurrentView('landing')}
               />
             )}
 
@@ -574,6 +737,7 @@ export default function App() {
                 onWaitlistRegistration={handleWaitlistRegistration}
                 onSaveAttendanceSession={handleSaveAttendanceSession}
                 onPostAnnouncement={handlePostAnnouncement}
+                onBackToLanding={() => setCurrentView('landing')}
               />
             )}
 
@@ -589,6 +753,7 @@ export default function App() {
                 onUpdateSettings={setSettings}
                 onUpdateClubCapacity={handleUpdateClubCapacity}
                 onToggleClubStatus={handleToggleClubStatus}
+                onBackToLanding={() => setCurrentView('landing')}
               />
             )}
 
@@ -600,7 +765,7 @@ export default function App() {
               </div>
               <button
                 onClick={handleResetData}
-                className="hover:text-zinc-300 transition-colors text-[11px] underline underline-offset-4"
+                className="hover:text-zinc-300 transition-colors text-[11px] underline underline-offset-4 cursor-pointer"
               >
                 Reset Demo Data
               </button>
@@ -653,6 +818,25 @@ export default function App() {
         isOpen={isAdminModalOpen}
         onClose={() => setIsAdminModalOpen(false)}
         onSuccess={() => setIsAdminAuthenticated(true)}
+        onAddToast={addToast}
+      />
+
+      {/* Student Registration & Sign-In Modal */}
+      <StudentAuthModal
+        isOpen={isStudentAuthModalOpen}
+        onClose={() => setIsStudentAuthModalOpen(false)}
+        onRegisterSuccess={handleRegisterSuccess}
+        onLoginSuccess={handleLoginSuccess}
+        registeredAccounts={studentAccounts}
+        onAddToast={addToast}
+        initialMode={studentAuthInitialMode}
+      />
+
+      {/* Student ID Card Modal */}
+      <StudentIDCardModal
+        isOpen={isStudentIDCardModalOpen}
+        onClose={() => setIsStudentIDCardModalOpen(false)}
+        student={users.student}
         onAddToast={addToast}
       />
 

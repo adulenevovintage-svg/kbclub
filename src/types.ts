@@ -124,14 +124,23 @@ export interface ClubCharterProposal {
 
 export interface Announcement {
   id: string;
-  clubId: string;
-  clubName: string;
+  clubId?: string;
+  clubName?: string;
   authorName: string;
   authorRole: string;
   title: string;
+  summary?: string;
   content: string;
   date: string;
-  priority: 'normal' | 'urgent';
+  priority: 'normal' | 'urgent' | 'breaking' | 'high';
+  category?: 'Breaking News' | 'Urgent Notice' | 'Championship' | 'Facility' | 'Event' | 'Charter' | 'Academic';
+  coverImage?: string;
+  badgeText?: string;
+  actionText?: string;
+  actionType?: 'register' | 'login' | 'catalog' | 'charter' | 'external';
+  isPinned?: boolean;
+  isPublished?: boolean;
+  readTime?: string;
 }
 
 export interface SystemSettings {
@@ -175,6 +184,21 @@ export interface WebsiteContent {
   mediaPhotos: MediaPhoto[];
 }
 
+export interface StudentAccount {
+  id: string; // e.g. "KB-2026-11B-48921"
+  studentIdNumber: string; // ID number to copy & sign in
+  firstName: string;
+  fatherName: string;
+  fullName: string; // Full name with father's name e.g. "Abebe Kebede"
+  grade: number; // 7, 8, 9, 10, 11, 12
+  section: 'A' | 'B' | 'C' | 'D' | 'E';
+  password: string;
+  email: string;
+  registeredAt: string;
+  avatarUrl?: string;
+  status: 'active' | 'suspended';
+}
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -184,4 +208,8 @@ export interface UserProfile {
   avatarUrl?: string;
   title?: string;
   department?: string;
+  fatherName?: string;
+  section?: 'A' | 'B' | 'C' | 'D' | 'E';
+  studentIdNumber?: string;
+  registeredAt?: string;
 }

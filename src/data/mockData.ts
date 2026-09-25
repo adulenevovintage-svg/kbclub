@@ -65,7 +65,7 @@ export const INITIAL_USERS: Record<string, UserProfile> = {
   },
 };
 
-export const INITIAL_CLUBS: Club[] = [
+const rawClubs: Club[] = [
   {
     id: 'club-robotics',
     name: 'Robotics & Autonomous Systems Syndicate',
@@ -77,15 +77,15 @@ export const INITIAL_CLUBS: Club[] = [
     advisorEmail: 'fasil@kbacademy.edu',
     advisorTitle: 'Faculty Advisor',
     studentPresident: 'Dawit Yohannes (Gr. 12)',
-    meetingDay: 'Tuesday',
-    meetingTime: '3:45 PM – 5:30 PM',
-    timeSlotKey: 'Tuesday-1545',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Lab 204 (Advanced Robotics Wing)',
     building: 'Von Neumann Science Center',
     capacity: 24,
     enrolledCount: 21,
     gradesEligible: [9, 10, 11, 12],
-    duesPerSemester: 45,
+    duesPerSemester: 0,
     prerequisites: 'Foundational algebra; prior coding experience encouraged but not mandatory for CAD team.',
     coverImage: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80',
     tags: ['Robotics', 'CAD', 'Python', 'Competition', 'Hardware'],
@@ -104,8 +104,8 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Mechanical Lead', name: 'Yared Bekele', grade: 11 }
     ],
     upcomingMeetings: [
-      { id: 'm-101', title: 'Chassis Stress Test & Autonomous Testing', date: 'Next Tuesday, 3:45 PM', time: '3:45 PM - 5:30 PM', room: 'Lab 204', agenda: 'Complete intake arm assembly and calibrate optical sensors.' },
-      { id: 'm-102', title: 'Scrimmage Simulation with Regional Rules', date: 'Oct 06, 3:45 PM', time: '3:45 PM - 5:30 PM', room: 'Arena Hall', agenda: 'Practice match rotations under tournament timing.' }
+      { id: 'm-101', title: 'Chassis Stress Test & Autonomous Testing', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Lab 204', agenda: 'Complete intake arm assembly and calibrate optical sensors.' },
+      { id: 'm-102', title: 'Scrimmage Simulation with Regional Rules', date: 'Oct 06, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Arena Hall', agenda: 'Practice match rotations under tournament timing.' }
     ]
   },
   {
@@ -119,15 +119,15 @@ export const INITIAL_CLUBS: Club[] = [
     advisorEmail: 'b.haile@kbacademy.edu',
     advisorTitle: 'Director of Humanities & Rhetoric',
     studentPresident: 'Selamawit Desta (Gr. 12)',
-    meetingDay: 'Thursday',
-    meetingTime: '4:00 PM – 5:30 PM',
-    timeSlotKey: 'Thursday-1600',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Debate Chamber 110',
     building: 'Franklin Humanities Hall',
     capacity: 28,
     enrolledCount: 26,
     gradesEligible: [9, 10, 11, 12],
-    duesPerSemester: 30,
+    duesPerSemester: 0,
     prerequisites: 'Open to all grades. Strong commitment to weekly research and cross-examination practice.',
     coverImage: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&auto=format&fit=crop&q=80',
     tags: ['Forensics', 'Philosophy', 'Public Speaking', 'Ethics', 'Tournaments'],
@@ -146,7 +146,7 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Novice Mentor', name: 'Tigist Assefa', grade: 10 }
     ],
     upcomingMeetings: [
-      { id: 'm-201', title: 'Resolution Briefing: AI Governance in Public Infrastructure', date: 'Next Thursday, 4:00 PM', time: '4:00 PM - 5:30 PM', room: 'Chamber 110', agenda: 'Case constructive reviews and aff/neg evidentiary packets distribution.' }
+      { id: 'm-201', title: 'Resolution Briefing: AI Governance in Public Infrastructure', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Chamber 110', agenda: 'Case constructive reviews and aff/neg evidentiary packets distribution.' }
     ]
   },
   {
@@ -161,14 +161,14 @@ export const INITIAL_CLUBS: Club[] = [
     advisorTitle: 'Senior Biology Specialist',
     studentPresident: 'Biruk Tefera (Gr. 12)',
     meetingDay: 'Wednesday',
-    meetingTime: '3:45 PM – 5:15 PM',
-    timeSlotKey: 'Wednesday-1545',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Biosciences Lab 308',
     building: 'Von Neumann Science Center',
     capacity: 18,
     enrolledCount: 17,
     gradesEligible: [10, 11, 12],
-    duesPerSemester: 50,
+    duesPerSemester: 0,
     prerequisites: 'Successful completion of Honors Biology or instructor recommendation.',
     coverImage: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&auto=format&fit=crop&q=80',
     tags: ['Genetics', 'CRISPR', 'Biotech', 'Laboratory', 'Bioinformatics'],
@@ -185,7 +185,7 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Protocol Officer', name: 'Bethel Mengistu', grade: 11 }
     ],
     upcomingMeetings: [
-      { id: 'm-301', title: 'Gel Electrophoresis Imaging & Band Sizing', date: 'Next Wednesday, 3:45 PM', time: '3:45 PM - 5:15 PM', room: 'Bio Lab 308', agenda: 'Inspect UV illumination boxes and calculate base pair distances.' }
+      { id: 'm-301', title: 'Gel Electrophoresis Imaging & Band Sizing', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Bio Lab 308', agenda: 'Inspect UV illumination boxes and calculate base pair distances.' }
     ]
   },
   {
@@ -199,15 +199,15 @@ export const INITIAL_CLUBS: Club[] = [
     advisorEmail: 's.kassa@kbacademy.edu',
     advisorTitle: 'Dean of Global Studies',
     studentPresident: 'Aster Mulatu (Gr. 12)',
-    meetingDay: 'Monday',
-    meetingTime: '4:00 PM – 5:30 PM',
-    timeSlotKey: 'Monday-1600',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Global Conference Suite 401',
     building: 'Adelphi International Pavilion',
     capacity: 35,
     enrolledCount: 30,
     gradesEligible: [9, 10, 11, 12],
-    duesPerSemester: 35,
+    duesPerSemester: 0,
     prerequisites: 'Interest in international relations, geopolitics, and collaborative negotiation.',
     coverImage: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&auto=format&fit=crop&q=80',
     tags: ['Diplomacy', 'Global Affairs', 'Public Speaking', 'Crisis Simulation', 'Conferences'],
@@ -224,7 +224,7 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Under-Secretary of Training', name: 'Natnael Tadesse', grade: 11 }
     ],
     upcomingMeetings: [
-      { id: 'm-401', title: 'Crisis Bloc Negotiations: Arctic Sea Route Treaties', date: 'Next Monday, 4:00 PM', time: '4:00 PM - 5:30 PM', room: 'Suite 401', agenda: 'Draft joint resolution sponsor list and prepare amendments.' }
+      { id: 'm-401', title: 'Crisis Bloc Negotiations: Arctic Sea Route Treaties', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Suite 401', agenda: 'Draft joint resolution sponsor list and prepare amendments.' }
     ]
   },
   {
@@ -238,17 +238,17 @@ export const INITIAL_CLUBS: Club[] = [
     advisorEmail: 'g.wolde@kbacademy.edu',
     advisorTitle: 'Director of Instrumental Arts',
     studentPresident: 'Hiwot Alemu (Gr. 11)',
-    meetingDay: 'Friday',
-    meetingTime: '3:30 PM – 5:00 PM',
-    timeSlotKey: 'Friday-1530',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Symphony Hall 102',
     building: 'Performing Arts Conservatory',
     capacity: 22,
     enrolledCount: 19,
     gradesEligible: [9, 10, 11, 12],
-    duesPerSemester: 25,
+    duesPerSemester: 0,
     prerequisites: 'Minimum 2 years instrument experience or audition submission.',
-    coverImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80',
+    coverImage: 'https://cdn.corenexis.com/f/RYaDtoR1mJP.webp',
     tags: ['Music', 'Chamber Strings', 'Ensemble', 'Performance', 'Orchestra'],
     status: 'Active',
     charterYear: 2017,
@@ -263,7 +263,7 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Principal Cellist', name: 'Ermias Fikru', grade: 12 }
     ],
     upcomingMeetings: [
-      { id: 'm-501', title: 'Winter Gala Repertoire Run-Through', date: 'Next Friday, 3:30 PM', time: '3:30 PM - 5:00 PM', room: 'Symphony Hall 102', agenda: 'Tuning sectionals followed by full ensemble tempo run.' }
+      { id: 'm-501', title: 'Winter Gala Repertoire Run-Through', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Symphony Hall 102', agenda: 'Tuning sectionals followed by full ensemble tempo run.' }
     ]
   },
   {
@@ -277,15 +277,15 @@ export const INITIAL_CLUBS: Club[] = [
     advisorEmail: 'fasil@kbacademy.edu',
     advisorTitle: 'Faculty Advisor',
     studentPresident: 'Nahom Daniel (Gr. 12)',
-    meetingDay: 'Thursday',
-    meetingTime: '3:45 PM – 5:15 PM',
-    timeSlotKey: 'Thursday-1545',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Makerspace Aerospace Bay',
     building: 'Von Neumann Science Center',
     capacity: 20,
     enrolledCount: 16,
     gradesEligible: [10, 11, 12],
-    duesPerSemester: 55,
+    duesPerSemester: 0,
     prerequisites: 'Safety certification workshop during Week 1 required for launchpad access.',
     coverImage: 'https://images.unsplash.com/photo-1517976487502-53b92dc1791a?w=800&auto=format&fit=crop&q=80',
     tags: ['Aerospace', 'Rocketry', 'Telemetry', 'Avionics', 'NAR Certified'],
@@ -302,7 +302,7 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Avionics Specialist', name: 'Lydia Kassahun', grade: 11 }
     ],
     upcomingMeetings: [
-      { id: 'm-601', title: 'Avionics Bay Soldering & Static Ejection Test', date: 'Next Thursday, 3:45 PM', time: '3:45 PM - 5:15 PM', room: 'Bay 104', agenda: 'Pressure chamber verification of ejection charge triggers.' }
+      { id: 'm-601', title: 'Avionics Bay Soldering & Static Ejection Test', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Bay 104', agenda: 'Pressure chamber verification of ejection charge triggers.' }
     ]
   },
   {
@@ -317,14 +317,14 @@ export const INITIAL_CLUBS: Club[] = [
     advisorTitle: 'Department of Mathematics',
     studentPresident: 'Kaleb Getachew (Gr. 11)',
     meetingDay: 'Wednesday',
-    meetingTime: '4:00 PM – 5:30 PM',
-    timeSlotKey: 'Wednesday-1600',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Seminar Room 215',
     building: 'Franklin Humanities Hall',
     capacity: 26,
     enrolledCount: 22,
     gradesEligible: [9, 10, 11, 12],
-    duesPerSemester: 15,
+    duesPerSemester: 0,
     prerequisites: 'Basic knowledge of chess rules; open to novice through rated players.',
     coverImage: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800&auto=format&fit=crop&q=80',
     tags: ['Chess', 'Tactics', 'Game Theory', 'FIDE', 'Competition'],
@@ -341,7 +341,7 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Tournament Director', name: 'Binyam Lemma', grade: 10 }
     ],
     upcomingMeetings: [
-      { id: 'm-701', title: 'Tactical Puzzle Blitz & Rated Ladder Round 3', date: 'Next Wednesday, 4:00 PM', time: '4:00 PM - 5:30 PM', room: 'Room 215', agenda: 'Record ladder moves for club Elo updates.' }
+      { id: 'm-701', title: 'Tactical Puzzle Blitz & Rated Ladder Round 3', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Room 215', agenda: 'Record ladder moves for club Elo updates.' }
     ]
   },
   {
@@ -355,15 +355,15 @@ export const INITIAL_CLUBS: Club[] = [
     advisorEmail: 'r.mekonnen@kbacademy.edu',
     advisorTitle: 'Journalism & Publications Advisor',
     studentPresident: 'Marta Hailu (Gr. 12)',
-    meetingDay: 'Monday',
-    meetingTime: '3:45 PM – 5:00 PM',
-    timeSlotKey: 'Monday-1545',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
     room: 'Digital Media Studio 202',
     building: 'Franklin Humanities Hall',
     capacity: 25,
     enrolledCount: 20,
     gradesEligible: [9, 10, 11, 12],
-    duesPerSemester: 20,
+    duesPerSemester: 0,
     prerequisites: 'Passion for reporting, creative nonfiction, photography, or audio editing.',
     coverImage: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&auto=format&fit=crop&q=80',
     tags: ['Journalism', 'Publishing', 'Photography', 'Podcasting', 'Editorial'],
@@ -380,10 +380,96 @@ export const INITIAL_CLUBS: Club[] = [
       { role: 'Managing Editor', name: 'Robel Negash', grade: 11 }
     ],
     upcomingMeetings: [
-      { id: 'm-801', title: 'Fall Print Issue Layout Deadline Review', date: 'Next Monday, 3:45 PM', time: '3:45 PM - 5:00 PM', room: 'Studio 202', agenda: 'Final page proof signoffs before sending to press.' }
+      { id: 'm-801', title: 'Fall Print Issue Layout Deadline Review', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Studio 202', agenda: 'Final page proof signoffs before sending to press.' }
+    ]
+  },
+  {
+    id: 'club-civics-law',
+    name: 'KB Youth Civic Governance & Constitutional Law Forum',
+    code: 'KB-CIV-09',
+    category: 'Civics & Culture',
+    tagline: 'Analyzing constitutional jurisprudence, legislative policy, and community advocacy.',
+    description: 'A premier civic leadership syndicate where students draft mock legislation, analyze supreme court precedent, and engage in civic action projects. Members interact with legal scholars, policy makers, and community leaders.',
+    advisorName: 'Ato Solomon Kassa',
+    advisorEmail: 's.kassa@kbacademy.edu',
+    advisorTitle: 'Dean of Global Studies & Civics',
+    studentPresident: 'Munit Tadesse (Gr. 12)',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
+    room: 'Law Center 304',
+    building: 'Adelphi International Pavilion',
+    capacity: 30,
+    enrolledCount: 24,
+    gradesEligible: [9, 10, 11, 12],
+    duesPerSemester: 0,
+    prerequisites: 'Strong interest in constitutional rights, public policy, and community service.',
+    coverImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&auto=format&fit=crop&q=80',
+    tags: ['Civics', 'Law', 'Policy', 'Advocacy', 'Governance'],
+    status: 'Active',
+    charterYear: 2017,
+    allocatedBudget: 4600,
+    syllabus: [
+      { week: 1, topic: 'Constitutional Rights & Landmark Judicial Precedents', objective: 'Examine freedom of expression and due process case law.' },
+      { week: 2, topic: 'Drafting Municipal Bill Proposals', objective: 'Formulate legislative text for community environmental and educational reforms.' },
+      { week: 3, topic: 'Legislative Committee Simulation & Witness Testimony', objective: 'Testify and debate proposed statutes before student assembly committees.' }
+    ],
+    officers: [
+      { role: 'Chief Justice', name: 'Munit Tadesse', grade: 12 },
+      { role: 'Legislative Clerk', name: 'Samuel Bekele', grade: 11 }
+    ],
+    upcomingMeetings: [
+      { id: 'm-901', title: 'Mock Legislative Committee Hearing on Youth Innovation Grants', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Law Center 304', agenda: 'Review bill amendments and testimony schedules.' }
+    ]
+  },
+  {
+    id: 'club-olympiad-math',
+    name: 'National Science & Mathematics Olympiad Syndicate',
+    code: 'KB-OLY-10',
+    category: 'Academic Olympiad',
+    tagline: 'Advanced problem-solving in number theory, combinatorics, and theoretical physics.',
+    description: 'An elite academic syndicate preparing top scholars for the International Mathematical Olympiad (IMO), Physics Olympiad, and national competitions. Rigorous mathematical proof writing, advanced calculus, and algorithmic problem-solving.',
+    advisorName: 'Dr. Tadesse Bekele',
+    advisorEmail: 't.bekele@kbacademy.edu',
+    advisorTitle: 'Head of Advanced Mathematics',
+    studentPresident: 'Yohannes Mulugeta (Gr. 12)',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
+    room: 'Euler Math Pavilion 405',
+    building: 'Von Neumann Science Center',
+    capacity: 20,
+    enrolledCount: 18,
+    gradesEligible: [10, 11, 12],
+    duesPerSemester: 0,
+    prerequisites: 'Enrollment in Advanced Placement Mathematics or instructor clearance.',
+    coverImage: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&auto=format&fit=crop&q=80',
+    tags: ['Olympiad', 'Mathematics', 'Physics', 'Problem Solving', 'Competitions'],
+    status: 'Active',
+    charterYear: 2013,
+    allocatedBudget: 6200,
+    syllabus: [
+      { week: 1, topic: 'Modular Arithmetic & Diophantine Equations', objective: 'Master quadratic residues and Fermat’s Little Theorem proofs.' },
+      { week: 2, topic: 'Combinatorial Graph Theory & Extremal Principles', objective: 'Apply Ramsey theory and generating functions to complex counting problems.' },
+      { week: 3, topic: 'Simulated National Olympiad Exam', objective: 'Complete timed 4-hour proof-based examination under contest conditions.' }
+    ],
+    officers: [
+      { role: 'Olympiad Captain', name: 'Yohannes Mulugeta', grade: 12 },
+      { role: 'Physics Lead', name: 'Bethlehem Tilahun', grade: 11 }
+    ],
+    upcomingMeetings: [
+      { id: 'm-1001', title: 'Inequality Proofs & Cauchy-Schwarz Masterclass', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Pavilion 405', agenda: 'Walkthrough of past national selection test problems.' }
     ]
   }
 ];
+
+export const INITIAL_CLUBS: Club[] = rawClubs.map(c => ({
+  ...c,
+  meetingDay: 'Wednesday',
+  meetingTime: '8:00 AM – 9:15 AM',
+  timeSlotKey: 'Wednesday-0800',
+  duesPerSemester: 0
+}));
 
 export const INITIAL_REGISTRATIONS: Registration[] = [
   {

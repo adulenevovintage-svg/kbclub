@@ -87,10 +87,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 <span className="text-emerald-400 font-mono font-semibold">{student.studentIdNumber}</span>
               </div>
             )}
-            <div className="flex items-center justify-between text-zinc-400">
-              <span>Required Student Dues:</span>
-              <span className="text-white font-semibold">${club.duesPerSemester} (Billed via Bursar)</span>
-            </div>
+
             <div className="flex items-center justify-between text-zinc-400">
               <span>Review Flow:</span>
               <span className="text-amber-400 font-semibold">

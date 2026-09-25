@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { UserProfile, StudentAccount } from '../types';
 import { X, Copy, Check, QrCode, ShieldCheck, Printer, Download, Sparkles } from 'lucide-react';
+import html2canvas from 'html2canvas';
 
 interface StudentIDCardModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export const StudentIDCardModal: React.FC<StudentIDCardModalProps> = ({
   onAddToast,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   if (!isOpen) return null;
 
@@ -30,6 +33,28 @@ export const StudentIDCardModal: React.FC<StudentIDCardModalProps> = ({
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    try {
+      setDownloading(true);
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+      });
+      const image = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = `KB-Academy-StudentID-${idNumber}.png`;
+      link.click();
+      onAddToast('success', 'Digital ID Downloaded', 'Your official KB Academy Student ID card has been saved as a high-res image.');
+    } catch (err) {
+      onAddToast('warning', 'Download Failed', 'Could not generate image. You can use Print ID instead.');
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -58,7 +83,7 @@ export const StudentIDCardModal: React.FC<StudentIDCardModalProps> = ({
         </div>
 
         {/* The Digital ID Card */}
-        <div className="relative rounded-3xl bg-gradient-to-br from-[#1b2030] via-[#151824] to-[#0c0e14] border-2 border-amber-500/50 p-6 shadow-2xl overflow-hidden print:border-black print:bg-white print:text-black">
+        <div ref={cardRef} className="relative rounded-3xl bg-gradient-to-br from-[#1b2030] via-[#151824] to-[#0c0e14] border-2 border-amber-500/50 p-6 shadow-2xl overflow-hidden print:border-black print:bg-white print:text-black">
           {/* Subtle Decorative Ambient */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
           
@@ -137,20 +162,21 @@ export const StudentIDCardModal: React.FC<StudentIDCardModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between gap-3 pt-2">
+        <div className="grid grid-cols-2 gap-3 pt-2">
           <button
             type="button"
-            onClick={handleCopy}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs border border-zinc-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
           >
-            <Copy className="w-4 h-4 text-amber-400" />
-            <span>{copied ? 'Copied ID' : 'Copy ID Number'}</span>
+            <Download className="w-4 h-4" />
+            <span>{downloading ? 'Downloading...' : 'Download ID'}</span>
           </button>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="py-2.5 px-4 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+            className="py-2.5 px-3 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
             <Printer className="w-4 h-4" />
             <span>Print ID</span>

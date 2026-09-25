@@ -27,7 +27,8 @@ import {
   UserCheck,
   LogOut,
   ShieldCheck,
-  ArrowLeft
+  ArrowLeft,
+  Settings
 } from 'lucide-react';
 
 interface StudentPortalProps {
@@ -39,7 +40,11 @@ interface StudentPortalProps {
   onOpenCharterModal: () => void;
   onDropClub: (registrationId: string) => void;
   onOpenIdCard?: () => void;
-  onSwitchAccount?: () => void;
+  onOpenAdminLogin?: () => void;
+  isAdminAuthenticated?: boolean;
+  onOpenClubOwnerPortal?: () => void;
+  onSaveAndExitAdmin?: () => void;
+  pendingRegistrationsCount?: number;
   onAddToast?: (type: 'success' | 'warning' | 'info', title: string, message: string) => void;
   onBackToLanding?: () => void;
 }
@@ -53,7 +58,11 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   onOpenCharterModal,
   onDropClub,
   onOpenIdCard,
-  onSwitchAccount,
+  onOpenAdminLogin,
+  isAdminAuthenticated,
+  onOpenClubOwnerPortal,
+  onSaveAndExitAdmin,
+  pendingRegistrationsCount,
   onAddToast,
   onBackToLanding,
 }) => {
@@ -157,115 +166,150 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   return (
     <div className="space-y-8">
       {/* Student Welcome & Status Overview */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-[#14161f] via-[#12141a] to-[#0c0d10] border border-[#232730] shadow-xl">
+      <div className="p-8 rounded-3xl bg-gradient-to-br from-[#161228] via-[#110e1f] to-[#0a0814] border border-[#2e264a] shadow-2xl space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-start sm:items-center gap-4">
+          <div className="flex items-start sm:items-center gap-5">
             <div className="relative flex-shrink-0">
               <img 
                 src={student.avatarUrl} 
                 alt={student.name} 
-                className="w-16 h-16 rounded-2xl object-cover border-2 border-[#c5832b]/50 shadow-md"
+                className="w-20 h-20 rounded-2xl object-cover border-2 border-[#c5832b]/60 shadow-lg"
               />
-              <span className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded bg-[#c5832b] text-white text-[10px] font-bold">
+              <span className="absolute -bottom-1.5 -right-1.5 px-2 py-0.5 rounded-md bg-[#c5832b] text-white text-[11px] font-bold shadow-sm">
                 Gr {student.grade || 11}{student.section ? `-${student.section}` : ''}
               </span>
             </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl font-bold text-white tracking-tight">{student.name}</h1>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-medium">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{student.name}</h1>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold">
                   Active Scholar
                 </span>
                 {student.section && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-semibold">
                     Section {student.section}
                   </span>
                 )}
               </div>
 
-              {/* Student ID & Actions */}
-              <div className="flex items-center gap-3 mt-2 flex-wrap text-xs">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0a0b10] border border-amber-500/30 text-amber-300 font-mono">
-                  <span className="text-[10px] text-zinc-500 uppercase">ID:</span>
-                  <span className="font-bold text-emerald-400">{studentIdNumber}</span>
+              <div className="flex items-center gap-3 flex-wrap text-xs pt-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#0b0c14] border border-amber-500/30 text-amber-300 font-mono shadow-inner">
+                  <span className="text-[10px] text-zinc-400 uppercase tracking-wider">Student ID:</span>
+                  <span className="font-bold text-emerald-400 text-sm">{studentIdNumber}</span>
                   <button
                     type="button"
                     onClick={handleCopyId}
-                    className="ml-1 text-zinc-400 hover:text-white cursor-pointer"
+                    className="ml-1 text-zinc-400 hover:text-white cursor-pointer p-0.5"
                     title="Copy Student ID"
                   >
-                    {copiedId ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedId ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
 
-                {onOpenIdCard && (
-                  <button
-                    type="button"
-                    onClick={onOpenIdCard}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 transition-colors cursor-pointer"
-                  >
-                    <IdCard className="w-3.5 h-3.5 text-amber-400" />
-                    <span>View Digital ID</span>
-                  </button>
-                )}
-
-                {onSwitchAccount && (
-                  <button
-                    type="button"
-                    onClick={onSwitchAccount}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800/80 hover:bg-zinc-800 text-zinc-400 hover:text-amber-300 border border-zinc-700 transition-colors cursor-pointer"
-                    title="Switch or Register another student"
-                  >
-                    <UserCheck className="w-3.5 h-3.5" />
-                    <span>Switch / Register Student</span>
-                  </button>
-                )}
+                <p className="text-xs text-zinc-400">
+                  {student.email}
+                </p>
               </div>
-
-              <p className="text-xs text-zinc-400 mt-1.5">
-                KB Academy Co-Curricular Track &bull; {student.email}
-              </p>
             </div>
           </div>
 
-              {/* Quick Metrics */}
+          {/* Metrics Cards */}
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-            {onBackToLanding && (
-              <button
-                type="button"
-                onClick={onBackToLanding}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1a1d27] hover:bg-[#252a3a] text-zinc-300 hover:text-white border border-[#2b3040] hover:border-[#c5832b] text-xs font-bold transition-all cursor-pointer shadow-sm group"
-                id="btn-student-portal-back-home"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 text-[#c5832b] group-hover:-translate-x-1 transition-transform" />
-                <span>Main Website</span>
-              </button>
-            )}
-
-            <div className="px-4 py-2.5 rounded-xl bg-[#0c0d10] border border-[#232730]">
-              <div className="text-xs text-zinc-400">Enrolled Clubs</div>
-              <div className="text-lg font-bold text-white flex items-center gap-1.5 mt-0.5">
+            <div className="px-5 py-3 rounded-2xl bg-[#0b0c14]/90 border border-[#282240] shadow-inner text-center">
+              <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Enrolled Clubs</div>
+              <div className="text-xl font-bold text-white flex items-center justify-center gap-1.5 mt-0.5">
                 <span className="text-[#c5832b]">{myEnrolledClubIds.size}</span>
                 <span className="text-xs text-zinc-500 font-normal">/ 3 max</span>
               </div>
             </div>
 
-            <div className="px-4 py-2.5 rounded-xl bg-[#0c0d10] border border-[#232730]">
-              <div className="text-xs text-zinc-400">Attendance Rate</div>
-              <div className="text-lg font-bold text-emerald-400 mt-0.5">
+            <div className="px-5 py-3 rounded-2xl bg-[#0b0c14]/90 border border-[#282240] shadow-inner text-center">
+              <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">Attendance</div>
+              <div className="text-xl font-bold text-emerald-400 mt-0.5">
                 {attendanceRate}%
               </div>
             </div>
-
-            <button
-              onClick={onOpenCharterModal}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-semibold transition-all shadow-md shadow-[#c5832b]/20 cursor-pointer"
-              id="student-propose-charter-btn"
-            >
-              <PlusCircle className="w-4 h-4" />
-              Propose New Club
-            </button>
           </div>
+        </div>
+
+        {/* Action Toolbar (Spacious & Clean) */}
+        <div className="flex items-center justify-between flex-wrap gap-3 pt-4 border-t border-[#292242]">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {onBackToLanding && (
+              <button
+                type="button"
+                onClick={onBackToLanding}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1a1d27] hover:bg-[#252a3a] text-zinc-200 hover:text-white border border-[#353b4f] text-xs font-bold transition-all cursor-pointer shadow-sm group"
+                id="btn-student-portal-back-home"
+              >
+                <ArrowLeft className="w-4 h-4 text-[#c5832b] group-hover:-translate-x-1 transition-transform" />
+                <span>Main Website</span>
+              </button>
+            )}
+
+            {onOpenIdCard && (
+              <button
+                type="button"
+                onClick={onOpenIdCard}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 text-xs font-bold transition-all cursor-pointer shadow-sm"
+              >
+                <IdCard className="w-4 h-4 text-amber-400" />
+                <span>Digital ID Card</span>
+              </button>
+            )}
+
+
+
+            {onOpenAdminLogin && (
+              <button
+                type="button"
+                onClick={onOpenAdminLogin}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm border ${
+                  isAdminAuthenticated 
+                    ? 'bg-emerald-600/30 text-emerald-300 border-emerald-500/60'
+                    : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/50'
+                }`}
+                title="Club Owner / Admin Settings (Passcode: kb@2019)"
+                id="btn-student-portal-admin-settings"
+              >
+                <Settings className={`w-4 h-4 ${isAdminAuthenticated ? 'text-emerald-400 animate-spin' : 'text-amber-400'}`} />
+                <span>{isAdminAuthenticated ? 'Club Owner Mode Active' : 'Club Owner Settings'}</span>
+              </button>
+            )}
+
+            {isAdminAuthenticated && onOpenClubOwnerPortal && (
+              <button
+                type="button"
+                onClick={onOpenClubOwnerPortal}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-extrabold transition-all cursor-pointer shadow-lg animate-pulse"
+                id="btn-club-owner-registration-portal"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Review Registration Requests ({pendingRegistrationsCount || 0})</span>
+              </button>
+            )}
+
+            {isAdminAuthenticated && onSaveAndExitAdmin && (
+              <button
+                type="button"
+                onClick={onSaveAndExitAdmin}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all cursor-pointer shadow-lg"
+                id="btn-club-owner-save-exit"
+              >
+                <Check className="w-4 h-4" />
+                <span>Save & Exit Club Owner Mode</span>
+              </button>
+            )}
+          </div>
+
+          <button
+            onClick={onOpenCharterModal}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-bold transition-all shadow-md shadow-[#c5832b]/30 cursor-pointer"
+            id="student-propose-charter-btn"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Propose New Club</span>
+          </button>
         </div>
       </div>
 

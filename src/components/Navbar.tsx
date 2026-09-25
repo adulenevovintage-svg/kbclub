@@ -57,24 +57,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#232730] bg-[#0c0d10]/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-200 bg-white/95 backdrop-blur-md text-zinc-900 shadow-xs">
       {/* Top micro-bar for official academy announcement / status */}
-      <div className="bg-[#121419] border-b border-[#1c1f26] px-4 py-1.5 text-xs text-zinc-400 flex items-center justify-between">
+      <div className="bg-zinc-100 border-b border-zinc-200 px-4 py-1.5 text-xs text-zinc-600 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full bg-[#c5832b] animate-pulse"></span>
-          <span className="font-semibold tracking-wider text-zinc-200">KB ACADEMY</span>
-          <span className="text-zinc-600">|</span>
-          <span className="hidden sm:inline text-zinc-400">Co-Curricular & Student Operations Hub</span>
+          <span className="font-semibold tracking-wider text-zinc-800">KB ACADEMY</span>
+          <span className="text-zinc-400">|</span>
+          <span className="hidden sm:inline text-zinc-600">Co-Curricular & Student Operations Hub</span>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-zinc-300">
-            <CalendarCheck className="w-3.5 h-3.5 text-[#c5832b]" />
-            <span>Fall 2026 Registration:</span>
-            {registrationOpen ? (
-              <span className="text-emerald-400 font-medium">Active (14 Days Left)</span>
-            ) : (
-              <span className="text-rose-400 font-medium">Closed</span>
-            )}
+          <div className="flex items-center gap-1.5 text-zinc-700 font-medium">
+            <span>Official Student & Staff Portal</span>
           </div>
         </div>
       </div>
@@ -87,36 +81,36 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-3 group text-left focus:outline-none"
             id="nav-brand-button"
           >
-            <div className="relative w-10 h-10 rounded-lg bg-white border border-[#c5832b]/50 p-0.5 flex items-center justify-center shadow-md shadow-black/40 group-hover:border-[#c5832b] transition-colors overflow-hidden">
+            <div className="relative w-10 h-10 rounded-lg bg-white border border-[#c5832b]/50 p-0.5 flex items-center justify-center shadow-sm group-hover:border-[#c5832b] transition-colors overflow-hidden">
               <img 
                 src="https://cdn.phototourl.com/free/2026-09-19-d8f0f13c-5886-4de1-b7ba-8996d63ce1a3.jpg"
                 alt="KB Academy Logo"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-contain"
               />
-              <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-[#c5832b] rounded-full border-2 border-[#0c0d10]"></div>
+              <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-[#c5832b] rounded-full border-2 border-white"></div>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-crest text-base font-bold tracking-wide text-white group-hover:text-[#c5832b] transition-colors">
+                <span className="font-crest text-base font-bold tracking-wide text-zinc-900 group-hover:text-[#c5832b] transition-colors">
                   KB ACADEMY
                 </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#c5832b]/20 text-[#e5a93c] font-mono font-medium border border-[#c5832b]/30">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-mono font-medium border border-amber-200">
                   DIGITAL
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-400 font-normal">Operations & Club Management</p>
+              <p className="text-[11px] text-zinc-500 font-normal">Operations & Club Management</p>
             </div>
           </button>
 
           {/* Primary View Mode Switcher */}
-          <div className="hidden md:flex items-center ml-4 pl-4 border-l border-[#232730] bg-[#14161d] p-1 rounded-lg border border-[#232730]">
+          <div className="hidden md:flex items-center ml-4 pl-4 border-l border-zinc-200 bg-zinc-100 p-1 rounded-lg border border-zinc-200">
             <button
               onClick={() => setCurrentView('landing')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                 currentView === 'landing'
-                  ? 'bg-[#c5832b] text-white shadow-sm shadow-[#c5832b]/20 font-semibold'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-[#c5832b] text-white shadow-xs font-semibold'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
               id="view-switch-landing"
             >
@@ -127,8 +121,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setCurrentView('operations')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                 currentView === 'operations'
-                  ? 'bg-[#c5832b] text-white shadow-sm shadow-[#c5832b]/20 font-semibold'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-[#c5832b] text-white shadow-xs font-semibold'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
               id="view-switch-operations"
             >
@@ -155,11 +149,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          {/* Interactive Role Switcher Dropdown */}
+          {/* Student Profile Info Card (No account/persona switching) */}
           <div className="relative">
             <button
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-              className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#14161d] border border-[#232730] hover:border-[#c5832b]/60 transition-all text-left"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-white border border-zinc-200 hover:border-[#c5832b]/60 transition-all text-left shadow-xs"
               id="role-dropdown-trigger"
             >
               <div className="relative">
@@ -168,85 +162,65 @@ export const Navbar: React.FC<NavbarProps> = ({
                   alt={currentUser.name} 
                   className="w-7 h-7 rounded-full object-cover border border-[#c5832b]/40"
                 />
-                <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-[#0c0d10]"></span>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white"></span>
               </div>
               <div className="hidden sm:block">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-zinc-100">{currentUser.name}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded border font-medium ${roleMeta[activeRole].color}`}>
-                    {activeRole.toUpperCase()}
+                  <span className="text-xs font-semibold text-zinc-900">{currentUser.name}</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded border bg-emerald-50 text-emerald-700 border-emerald-200 font-medium">
+                    STUDENT
                   </span>
                 </div>
-                <div className="text-[10px] text-zinc-400 truncate max-w-[130px]">
-                  {currentUser.title || roleMeta[activeRole].label}
+                <div className="text-[10px] text-zinc-500 truncate max-w-[130px]">
+                  {currentUser.title || `Grade ${currentUser.grade || 11}`}
                 </div>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Profile Popover (No switching between accounts) */}
             {showRoleDropdown && (
               <>
                 <div 
                   className="fixed inset-0 z-30" 
                   onClick={() => setShowRoleDropdown(false)}
                 ></div>
-                <div className="absolute right-0 mt-2 w-80 rounded-xl bg-[#14161d] border border-[#2a2e3a] shadow-2xl p-2 z-40 animate-in fade-in-50 duration-150">
-                  <div className="px-3 py-2 border-b border-[#232730] mb-1">
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
-                      Switch Active Persona
+                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-zinc-200 shadow-2xl p-4 z-40 animate-in fade-in-50 duration-150 text-zinc-900">
+                  <div className="flex items-center gap-3 pb-3 border-b border-zinc-100 mb-3">
+                    <img 
+                      src={currentUser.avatarUrl} 
+                      alt={currentUser.name} 
+                      className="w-12 h-12 rounded-xl object-cover border border-[#c5832b]/40 shadow-xs"
+                    />
+                    <div>
+                      <h4 className="text-sm font-bold text-zinc-900">{currentUser.name}</h4>
+                      <p className="text-[11px] text-zinc-500 font-mono">{currentUser.studentIdNumber || currentUser.email}</p>
+                      <span className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-semibold">
+                        Grade {currentUser.grade || 11}{currentUser.section ? `-${currentUser.section}` : ''}
+                      </span>
                     </div>
-                    <p className="text-xs text-zinc-300 mt-0.5">
-                      Explore the system through different stakeholder perspectives.
-                    </p>
                   </div>
 
-                  {(['student', 'director'] as UserRole[]).map((role) => {
-                    const info = users[role];
-                    const meta = roleMeta[role];
-                    const RoleIcon = meta.icon;
-                    const isSelected = activeRole === role;
+                  <div className="space-y-1 text-xs text-zinc-600 mb-3">
+                    <div className="flex justify-between py-1 border-b border-zinc-50">
+                      <span>Status:</span>
+                      <span className="font-semibold text-emerald-600">Active Account</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-zinc-50">
+                      <span>Email:</span>
+                      <span className="font-medium text-zinc-800 truncate max-w-[160px]">{currentUser.email}</span>
+                    </div>
+                  </div>
 
-                    return (
-                      <button
-                        key={role}
-                        onClick={() => {
-                          setActiveRole(role);
-                          setShowRoleDropdown(false);
-                          if (currentView === 'landing') {
-                            setCurrentView('operations');
-                          }
-                        }}
-                        className={`w-full flex items-start gap-3 p-2.5 rounded-lg text-left transition-all mb-1 ${
-                          isSelected
-                            ? 'bg-[#1e222d] border border-[#c5832b]/50 shadow-sm'
-                            : 'hover:bg-[#191c24] border border-transparent'
-                        }`}
-                        id={`switch-role-${role}`}
-                      >
-                        <div className="p-2 rounded-lg bg-[#0c0d10] border border-[#2a2e3a] text-[#c5832b]">
-                          <RoleIcon className="w-4 h-4" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-zinc-100 flex items-center gap-1.5">
-                              {info.name}
-                              {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-[#c5832b]" />}
-                            </span>
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded border font-medium ${meta.color}`}>
-                              {role.toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="text-[11px] text-zinc-400 mt-0.5 truncate">
-                            {info.title || meta.label}
-                          </div>
-                          <div className="text-[10px] text-zinc-500 mt-1">
-                            {meta.description}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                  <button
+                    onClick={() => {
+                      setShowRoleDropdown(false);
+                      setCurrentView('landing');
+                    }}
+                    className="w-full py-2 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <span>← Return to Main Website</span>
+                  </button>
                 </div>
               </>
             )}

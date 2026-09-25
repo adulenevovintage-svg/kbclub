@@ -71,6 +71,24 @@ export const LandingView: React.FC<LandingViewProps> = ({
   // Live editing mode state - strictly false by default, only true if admin authenticated and enabled
   const [isLiveEditing, setIsLiveEditing] = useState<boolean>(false);
 
+  // 3D Tilt effect state for the logo tracking the cursor across the welcoming page
+  const [logoTransform, setLogoTransform] = useState({ rotateX: 0, rotateY: 0, scale: 1 });
+
+  const handleWelcomeMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    
+    // High sensitivity 360-degree responsive tilt (±32 deg)
+    const rotateX = -(y / (rect.height / 2)) * 32;
+    const rotateY = (x / (rect.width / 2)) * 32;
+    setLogoTransform({ rotateX, rotateY, scale: 1.08 });
+  };
+
+  const handleWelcomeMouseLeave = () => {
+    setLogoTransform({ rotateX: 0, rotateY: 0, scale: 1 });
+  };
+
   // Automatically enable live editing when admin authenticates with the password
   React.useEffect(() => {
     if (isAdminAuthenticated) {
@@ -204,7 +222,12 @@ export const LandingView: React.FC<LandingViewProps> = ({
     <div className="w-full bg-[#ffffff] text-zinc-900 selection:bg-[#c5832b] selection:text-white pb-16">
       
       {/* 1. Full-Screen Grand Showcase Section (WELCOME PAGE - PRESERVED & UNCHANGED AS REQUESTED) */}
-      <section className="relative min-h-screen w-full flex flex-col justify-between items-center text-center overflow-hidden px-4 sm:px-6 lg:px-8 py-10 sm:py-14 bg-gradient-to-b from-[#ffffff] via-[#fcfbf9] to-[#f5f1e9]">
+      <section 
+        onMouseMove={handleWelcomeMouseMove}
+        onMouseLeave={handleWelcomeMouseLeave}
+        className="relative min-h-screen w-full flex flex-col justify-between items-center text-center overflow-hidden px-4 sm:px-6 lg:px-8 py-10 sm:py-14 bg-gradient-to-b from-[#ffffff] via-[#fcfbf9] to-[#f5f1e9]"
+        style={{ perspective: '1200px' }}
+      >
         {/* Bright, radiant ambient lighting & subtle geometric pattern */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Warm ochre & golden sunlight ambient glows */}
@@ -225,10 +248,17 @@ export const LandingView: React.FC<LandingViewProps> = ({
         {/* Center Content Container */}
         <div className="relative z-10 max-w-5xl mx-auto w-full flex-1 flex flex-col items-center justify-center my-auto pt-4 pb-8">
           
-          {/* Big KB Academy Crest / Logo */}
-          <div className="relative mb-6 group">
+          {/* Big KB Academy Crest / Logo with 3D Cursor Tracking Tilt Effect */}
+          <div 
+            className="relative mb-6 group cursor-pointer"
+            style={{
+              transform: `perspective(1000px) rotateX(${logoTransform.rotateX}deg) rotateY(${logoTransform.rotateY}deg) scale(${logoTransform.scale})`,
+              transition: 'transform 0.08s cubic-bezier(0.1, 0.9, 0.2, 1)',
+              transformStyle: 'preserve-3d'
+            }}
+          >
             <div className="absolute -inset-4 bg-gradient-to-r from-amber-300/40 via-orange-200/50 to-amber-400/40 rounded-3xl blur-2xl opacity-80 group-hover:opacity-100 transition-opacity" />
-            <div className="relative p-2.5 sm:p-3 bg-white rounded-3xl shadow-xl shadow-amber-900/10 border-2 border-amber-200/80 hover:border-[#c5832b] transition-all duration-300 transform hover:scale-105">
+            <div className="relative p-2.5 sm:p-3 bg-white rounded-3xl shadow-xl shadow-amber-900/10 border-2 border-amber-200/80 hover:border-[#c5832b] transition-colors duration-300">
               <img
                 src={kbLogoUrl}
                 alt="KB Academy Crest"

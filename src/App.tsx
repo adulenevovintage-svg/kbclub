@@ -35,6 +35,12 @@ import { AdminLoginModal } from './components/AdminLoginModal';
 import { StudentAuthModal } from './components/StudentAuthModal';
 import { StudentIDCardModal } from './components/StudentIDCardModal';
 import { Toast, ToastMessage } from './components/Toast';
+import { ClubOwnerRegistrationPortalModal } from './components/ClubOwnerRegistrationPortalModal';
+import { 
+  subscribeToCollection, 
+  saveItemToFirestore, 
+  seedInitialDataIfEmpty 
+} from './services/firestoreService';
 import { ArrowLeft, Home, Compass } from 'lucide-react';
 
 export default function App() {
@@ -88,7 +94,15 @@ export default function App() {
       const saved = localStorage.getItem('kb_academy_v2_clubs');
       if (saved) {
         const parsed: Club[] = JSON.parse(saved);
-        return parsed.map(c => (!c.advisorName || c.advisorName === 'Faculty Advisor' || c.id === 'club-robotics' || c.id === 'club-aerospace') ? { ...c, advisorName: 'Mr. Fasil', advisorEmail: 'fasil@kbacademy.edu', advisorTitle: 'Faculty Advisor' } : c);
+        return parsed.map(c => {
+          if (c.id === 'club-orchestra') {
+            return { ...c, coverImage: 'https://cdn.corenexis.com/f/RYaDtoR1mJP.webp' };
+          }
+          if (!c.advisorName || c.advisorName === 'Faculty Advisor' || c.id === 'club-robotics' || c.id === 'club-aerospace') {
+            return { ...c, advisorName: 'Mr. Fasil', advisorEmail: 'fasil@kbacademy.edu', advisorTitle: 'Faculty Advisor' };
+          }
+          return c;
+        });
       }
       return INITIAL_CLUBS;
     } catch {
@@ -181,6 +195,73 @@ export default function App() {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   // Admin mode is strictly INACTIVE by default, reserved ONLY for users who input the password via the settings icon
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
+  const [isClubOwnerPortalModalOpen, setIsClubOwnerPortalModalOpen] = useState(false);
+
+  // Firestore sync & initialization
+  useEffect(() => {
+    const seedAndSubscribe = async () => {
+      await seedInitialDataIfEmpty('kb_academy_clubs', INITIAL_CLUBS);
+      await seedInitialDataIfEmpty('kb_academy_registrations', INITIAL_REGISTRATIONS);
+      await seedInitialDataIfEmpty('kb_academy_proposals', INITIAL_CHARTER_PROPOSALS);
+      await seedInitialDataIfEmpty('kb_academy_announcements', INITIAL_ANNOUNCEMENTS);
+      await seedInitialDataIfEmpty('kb_academy_attendance', INITIAL_ATTENDANCE_SESSIONS);
+      await seedInitialDataIfEmpty('kb_academy_student_accounts', INITIAL_STUDENT_ACCOUNTS);
+    };
+    seedAndSubscribe();
+
+    const unsubClubs = subscribeToCollection<Club>('kb_academy_clubs', (items) => {
+      if (items.length > 0) setClubs(items);
+    });
+    const unsubRegs = subscribeToCollection<Registration>('kb_academy_registrations', (items) => {
+      if (items.length > 0) setRegistrations(items);
+    });
+    const unsubProps = subscribeToCollection<ClubCharterProposal>('kb_academy_proposals', (items) => {
+      if (items.length > 0) setProposals(items);
+    });
+    const unsubAnn = subscribeToCollection<Announcement>('kb_academy_announcements', (items) => {
+      if (items.length > 0) setAnnouncements(items);
+    });
+    const unsubStudents = subscribeToCollection<StudentAccount>('kb_academy_student_accounts', (items) => {
+      if (items.length > 0) setStudentAccounts(items);
+    });
+
+    return () => {
+      unsubClubs();
+      unsubRegs();
+      unsubProps();
+      unsubAnn();
+      unsubStudents();
+    };
+  }, []);
+
+  const handleClubOwnerApproveRegistration = async (regId: string) => {
+    const reg = registrations.find(r => r.id === regId);
+    if (!reg) return;
+
+    const updatedReg: Registration = { ...reg, status: 'enrolled' };
+    setRegistrations(prev => prev.map(r => r.id === regId ? updatedReg : r));
+    await saveItemToFirestore('kb_academy_registrations', updatedReg);
+
+    const club = clubs.find(c => c.id === reg.clubId);
+    if (club) {
+      const updatedClub: Club = { ...club, enrolledCount: club.enrolledCount + 1 };
+      setClubs(prev => prev.map(c => c.id === club.id ? updatedClub : c));
+      await saveItemToFirestore('kb_academy_clubs', updatedClub);
+    }
+
+    addToast('success', 'Registration Accepted', `${reg.studentName} is successfully registered for ${reg.clubName}!`);
+  };
+
+  const handleClubOwnerRejectRegistration = async (regId: string) => {
+    const reg = registrations.find(r => r.id === regId);
+    if (!reg) return;
+
+    const updatedReg: Registration = { ...reg, status: 'declined' };
+    setRegistrations(prev => prev.map(r => r.id === regId ? updatedReg : r));
+    await saveItemToFirestore('kb_academy_registrations', updatedReg);
+
+    addToast('info', 'Registration Declined', `Declined request for ${reg.studentName}.`);
+  };
 
   // Student Auth Modal state & Student ID card modal state
   const [isStudentAuthModalOpen, setIsStudentAuthModalOpen] = useState(false);
@@ -322,7 +403,7 @@ export default function App() {
   };
 
   // Student registers for a club
-  const handleRegisterSubmit = (statementOfInterest: string) => {
+  const handleRegisterSubmit = async (statementOfInterest: string) => {
     if (!selectedClubForRegistration) return;
     const club = selectedClubForRegistration;
     const student = users.student;
@@ -369,12 +450,13 @@ export default function App() {
     };
 
     setRegistrations(prev => [newReg, ...prev]);
+    await saveItemToFirestore('kb_academy_registrations', newReg);
 
     // Update club enrolled count if immediate
     if (initialStatus === 'enrolled') {
-      setClubs(prev => prev.map(c => 
-        c.id === club.id ? { ...c, enrolledCount: c.enrolledCount + 1 } : c
-      ));
+      const updatedClub = { ...club, enrolledCount: club.enrolledCount + 1 };
+      setClubs(prev => prev.map(c => c.id === club.id ? updatedClub : c));
+      await saveItemToFirestore('kb_academy_clubs', updatedClub);
     }
 
     setSelectedClubForRegistration(null);
@@ -382,7 +464,7 @@ export default function App() {
     if (initialStatus === 'waitlisted') {
       addToast('warning', 'Placed on Waitlist', `You are queued for an opening in ${club.name}.`);
     } else if (initialStatus === 'pending') {
-      addToast('success', 'Application Submitted', `Sent to faculty advisor ${club.advisorName} for review.`);
+      addToast('success', 'Application Submitted', `Sent to club owner / advisors for review.`);
     } else {
       addToast('success', 'Registration Confirmed', `You are officially enrolled in ${club.name}!`);
     }
@@ -645,7 +727,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
-      currentView === 'landing' ? 'bg-white text-zinc-900' : 'bg-[#0c0d10] text-[#f4f4f5]'
+      currentView === 'landing' ? 'bg-white text-zinc-900' : 'bg-gradient-to-br from-[#120a22] via-[#090614] to-[#05040a] text-[#f4f4f5]'
     }`}>
       {/* 1. Global Navigation Bar - rendered only in operations view */}
       {currentView === 'operations' && (
@@ -719,7 +801,14 @@ export default function App() {
                 onOpenCharterModal={() => setIsNewCharterModalOpen(true)}
                 onDropClub={handleDropClub}
                 onOpenIdCard={() => setIsStudentIDCardModalOpen(true)}
-                onSwitchAccount={() => handleOpenStudentAuth('register')}
+                onOpenAdminLogin={() => setIsAdminModalOpen(true)}
+                isAdminAuthenticated={isAdminAuthenticated}
+                onOpenClubOwnerPortal={() => setIsClubOwnerPortalModalOpen(true)}
+                onSaveAndExitAdmin={() => {
+                  setIsAdminAuthenticated(false);
+                  addToast('success', 'Club Owner Mode Saved & Exited', 'Your changes have been saved and admin mode closed securely.');
+                }}
+                pendingRegistrationsCount={registrations.filter(r => r.status === 'pending').length}
                 onAddToast={addToast}
                 onBackToLanding={() => setCurrentView('landing')}
               />
@@ -838,6 +927,16 @@ export default function App() {
         onClose={() => setIsStudentIDCardModalOpen(false)}
         student={users.student}
         onAddToast={addToast}
+      />
+
+      {/* Club Owner Registration Review Portal Modal (Accessible via Club Owner Settings mode) */}
+      <ClubOwnerRegistrationPortalModal
+        isOpen={isClubOwnerPortalModalOpen}
+        onClose={() => setIsClubOwnerPortalModalOpen(false)}
+        registrations={registrations}
+        clubs={clubs}
+        onApprove={handleClubOwnerApproveRegistration}
+        onReject={handleClubOwnerRejectRegistration}
       />
 
       {/* Toast Alerts */}

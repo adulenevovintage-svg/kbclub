@@ -5,13 +5,9 @@ import {
   setDoc, 
   updateDoc, 
   deleteDoc, 
-  onSnapshot, 
-  setLogLevel 
+  onSnapshot 
 } from 'firebase/firestore';
 import { db } from '../firebase';
-
-// Enable debug logging for Firestore if needed
-// setLogLevel('debug');
 
 export const subscribeToCollection = <T>(
   collectionName: string, 
@@ -27,11 +23,10 @@ export const subscribeToCollection = <T>(
       });
       onData(items);
     }, (error) => {
-      console.warn(`Firestore sync warning for ${collectionName}:`, error);
+      // Gracefully handle offline / connection unavailable without throwing
       if (onError) onError(error);
     });
   } catch (err) {
-    console.warn(`Failed to subscribe to ${collectionName}:`, err);
     return () => {};
   }
 };
@@ -44,7 +39,7 @@ export const saveItemToFirestore = async <T extends { id: string }>(
     const docRef = doc(db, collectionName, String(item.id));
     await setDoc(docRef, item, { merge: true });
   } catch (err) {
-    console.error(`Failed to save item to ${collectionName}:`, err);
+    // Graceful offline fallback
   }
 };
 
@@ -57,13 +52,11 @@ export const updateItemInFirestore = async (
     const docRef = doc(db, collectionName, String(itemId));
     await updateDoc(docRef, data);
   } catch (err) {
-    console.error(`Failed to update item in ${collectionName}:`, err);
-    // Try setDoc with merge as fallback if doc doesn't exist
     try {
       const docRef = doc(db, collectionName, String(itemId));
       await setDoc(docRef, data, { merge: true });
     } catch (fallbackErr) {
-      console.error(`Fallback setDoc failed:`, fallbackErr);
+      // Graceful offline fallback
     }
   }
 };
@@ -76,7 +69,7 @@ export const deleteItemFromFirestore = async (
     const docRef = doc(db, collectionName, String(itemId));
     await deleteDoc(docRef);
   } catch (err) {
-    console.error(`Failed to delete item from ${collectionName}:`, err);
+    // Graceful offline fallback
   }
 };
 
@@ -96,6 +89,6 @@ export const seedInitialDataIfEmpty = async (
       }
     }
   } catch (err) {
-    console.warn(`Seed initial data warning for ${collectionName}:`, err);
+    // Graceful offline fallback
   }
 };

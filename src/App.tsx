@@ -34,6 +34,7 @@ import { NotificationDrawer } from './components/NotificationDrawer';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { StudentAuthModal } from './components/StudentAuthModal';
 import { StudentIDCardModal } from './components/StudentIDCardModal';
+import { StudentPortalEntranceVideoModal } from './components/StudentPortalEntranceVideoModal';
 import { Toast, ToastMessage } from './components/Toast';
 import { ClubOwnerRegistrationPortalModal } from './components/ClubOwnerRegistrationPortalModal';
 import { 
@@ -196,6 +197,7 @@ export default function App() {
   // Admin mode is strictly INACTIVE by default, reserved ONLY for users who input the password via the settings icon
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
   const [isClubOwnerPortalModalOpen, setIsClubOwnerPortalModalOpen] = useState(false);
+  const [isEntranceVideoOpen, setIsEntranceVideoOpen] = useState(false);
 
   // Firestore sync & initialization
   useEffect(() => {
@@ -392,6 +394,7 @@ export default function App() {
     setCurrentStudentId(newAccount.id);
     setActiveRole('student');
     setCurrentView('operations');
+    setIsEntranceVideoOpen(true);
     addToast('success', 'Profile Activated', `Welcome to the Student Portal, ${newAccount.fullName}!`);
   };
 
@@ -399,6 +402,7 @@ export default function App() {
     setCurrentStudentId(account.id);
     setActiveRole('student');
     setCurrentView('operations');
+    setIsEntranceVideoOpen(true);
     addToast('success', 'Welcome Back', `Authenticated as ${account.fullName} (${account.studentIdNumber}).`);
   };
 
@@ -780,14 +784,6 @@ export default function App() {
                 <span className="px-2.5 py-1 rounded-lg bg-[#0c0d12] border border-[#2b3040] text-amber-300 font-bold uppercase text-[11px]">
                   {activeRole === 'student' ? 'High School Student Portal' : activeRole === 'teacher' ? 'Faculty Advisor Portal' : 'Student Life Director'}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setCurrentView('landing')}
-                  className="hidden sm:inline-flex items-center gap-1 text-zinc-400 hover:text-white transition-colors underline underline-offset-4 cursor-pointer"
-                >
-                  <Compass className="w-3.5 h-3.5 text-[#c5832b]" />
-                  <span>Return to Public Showcase</span>
-                </button>
               </div>
             </div>
 
@@ -937,6 +933,12 @@ export default function App() {
         clubs={clubs}
         onApprove={handleClubOwnerApproveRegistration}
         onReject={handleClubOwnerRejectRegistration}
+      />
+
+      {/* Cinematic Entrance Video Modal */}
+      <StudentPortalEntranceVideoModal
+        isOpen={isEntranceVideoOpen}
+        onEnterPortal={() => setIsEntranceVideoOpen(false)}
       />
 
       {/* Toast Alerts */}

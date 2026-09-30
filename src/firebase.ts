@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, memoryLocalCache } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp({
@@ -12,6 +12,15 @@ const app = initializeApp({
   measurementId: firebaseConfig.measurementId
 });
 
-export const db = getFirestore(app);
+let firestoreInstance;
+try {
+  firestoreInstance = initializeFirestore(app, {
+    localCache: memoryLocalCache()
+  });
+} catch (e) {
+  firestoreInstance = getFirestore(app);
+}
+
+export const db = firestoreInstance;
 
 export default app;

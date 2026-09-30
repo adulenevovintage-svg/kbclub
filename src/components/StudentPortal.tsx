@@ -72,18 +72,6 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   const [selectedDay, setSelectedDay] = useState<string>('All');
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
-  const [dismissedHints, setDismissedHints] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDismissedHints({
-        landing: true,
-        idcard: true,
-        charter: true
-      });
-    }, 15000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const studentIdNumber = student.studentIdNumber || student.id;
 
@@ -248,38 +236,32 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
         <div className="flex items-center justify-between flex-wrap gap-3 pt-4 border-t border-[#292242]">
           <div className="flex items-center gap-2.5 flex-wrap">
             {onBackToLanding && (
-              <div className="relative inline-block">
-                {!dismissedHints.landing && (
-                  <span className="absolute -top-10 left-0 px-3.5 py-1.5 rounded-xl bg-amber-400 text-zinc-950 font-bold text-xs shadow-2xl animate-bounce pointer-events-none z-30 whitespace-nowrap border border-amber-200">
-                    🏠 Return to Main Website
-                  </span>
-                )}
+              <div className="relative inline-block group">
+                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-40 px-3.5 py-2 rounded-xl bg-[#14161f] text-amber-300 border border-amber-500/40 text-xs font-semibold whitespace-nowrap shadow-2xl pointer-events-none">
+                  🏠 Return to Academy Main Website & Public Portal
+                </div>
                 <button
                   type="button"
                   onClick={() => {
-                    setDismissedHints(p => ({ ...p, landing: true }));
                     if (onBackToLanding) onBackToLanding();
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1a1d27] hover:bg-[#252a3a] text-zinc-200 hover:text-white border border-[#353b4f] text-xs font-bold transition-all cursor-pointer shadow-sm group"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1a1d27] hover:bg-[#252a3a] text-zinc-200 hover:text-white border border-[#353b4f] text-xs font-bold transition-all cursor-pointer shadow-sm group/btn"
                   id="btn-student-portal-back-home"
                 >
-                  <ArrowLeft className="w-4 h-4 text-[#c5832b] group-hover:-translate-x-1 transition-transform" />
+                  <ArrowLeft className="w-4 h-4 text-[#c5832b] group-hover/btn:-translate-x-1 transition-transform" />
                   <span>Main Website</span>
                 </button>
               </div>
             )}
 
             {onOpenIdCard && (
-              <div className="relative inline-block">
-                {!dismissedHints.idcard && (
-                  <span className="absolute -top-10 left-0 px-3.5 py-1.5 rounded-xl bg-emerald-400 text-zinc-950 font-bold text-xs shadow-2xl animate-bounce pointer-events-none z-30 whitespace-nowrap border border-emerald-200">
-                    🆔 View Official QR ID Badge
-                  </span>
-                )}
+              <div className="relative inline-block group">
+                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-40 px-3.5 py-2 rounded-xl bg-[#14161f] text-emerald-300 border border-emerald-500/40 text-xs font-semibold whitespace-nowrap shadow-2xl pointer-events-none">
+                  🆔 Display Official Student QR ID Badge & Verified Credentials
+                </div>
                 <button
                   type="button"
                   onClick={() => {
-                    setDismissedHints(p => ({ ...p, idcard: true }));
                     if (onOpenIdCard) onOpenIdCard();
                   }}
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 text-xs font-bold transition-all cursor-pointer shadow-sm"
@@ -291,7 +273,10 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             )}
 
             {onOpenAdminLogin && (
-              <div className="relative inline-block">
+              <div className="relative inline-block group">
+                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-40 px-3.5 py-2 rounded-xl bg-[#14161f] text-purple-300 border border-purple-500/40 text-xs font-semibold whitespace-nowrap shadow-2xl pointer-events-none">
+                  🔑 Access Administrative Controls & Club Review Dashboard
+                </div>
                 <button
                   type="button"
                   onClick={() => {
@@ -302,7 +287,6 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       ? 'bg-emerald-600/30 text-emerald-300 border-emerald-500/60'
                       : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/50'
                   }`}
-                  title="Club Owner / Admin Settings"
                   id="btn-student-portal-admin-settings"
                 >
                   <Settings className={`w-4 h-4 ${isAdminAuthenticated ? 'text-emerald-400 animate-spin' : 'text-amber-400'}`} />
@@ -336,15 +320,12 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             )}
           </div>
 
-          <div className="relative inline-block">
-            {!dismissedHints.charter && (
-              <span className="absolute -top-10 right-0 px-3.5 py-1.5 rounded-xl bg-amber-400 text-zinc-950 font-bold text-xs shadow-2xl animate-bounce pointer-events-none z-30 whitespace-nowrap border border-amber-200">
-                📝 Propose New Club Charter
-              </span>
-            )}
+          <div className="relative inline-block group">
+            <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block z-40 px-3.5 py-2 rounded-xl bg-[#14161f] text-amber-300 border border-amber-500/40 text-xs font-semibold whitespace-nowrap shadow-2xl pointer-events-none">
+              📝 Submit a New Co-Curricular Club Charter Petition for Faculty Approval
+            </div>
             <button
               onClick={() => {
-                setDismissedHints(p => ({ ...p, charter: true }));
                 onOpenCharterModal();
               }}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#c5832b] hover:bg-[#a96721] text-white text-xs font-bold transition-all shadow-md shadow-[#c5832b]/30 cursor-pointer"

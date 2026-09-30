@@ -40,6 +40,7 @@ import { ClubOwnerRegistrationPortalModal } from './components/ClubOwnerRegistra
 import { 
   subscribeToCollection, 
   saveItemToFirestore, 
+  deleteItemFromFirestore,
   seedInitialDataIfEmpty 
 } from './services/firestoreService';
 import { ArrowLeft, Home, Compass } from 'lucide-react';
@@ -389,20 +390,22 @@ export default function App() {
     setIsStudentAuthModalOpen(true);
   };
 
-  const handleRegisterSuccess = (newAccount: StudentAccount) => {
+  const handleRegisterSuccess = async (newAccount: StudentAccount) => {
     setStudentAccounts(prev => [newAccount, ...prev.filter(a => a.id !== newAccount.id)]);
     setCurrentStudentId(newAccount.id);
     setActiveRole('student');
     setCurrentView('operations');
     setIsEntranceVideoOpen(true);
+    await saveItemToFirestore('kb_academy_student_accounts', newAccount);
     addToast('success', 'Profile Activated', `Welcome to the Student Portal, ${newAccount.fullName}!`);
   };
 
-  const handleLoginSuccess = (account: StudentAccount) => {
+  const handleLoginSuccess = async (account: StudentAccount) => {
     setCurrentStudentId(account.id);
     setActiveRole('student');
     setCurrentView('operations');
     setIsEntranceVideoOpen(true);
+    await saveItemToFirestore('kb_academy_student_accounts', account);
     addToast('success', 'Welcome Back', `Authenticated as ${account.fullName} (${account.studentIdNumber}).`);
   };
 
@@ -475,111 +478,125 @@ export default function App() {
   };
 
   // Advisor approves application
-  const handleApproveRegistration = (regId: string, advisorNote?: string) => {
+  const handleApproveRegistration = async (regId: string, advisorNote?: string) => {
     const reg = registrations.find(r => r.id === regId);
     if (!reg) return;
 
-    setRegistrations(prev => prev.map(r => 
-      r.id === regId ? { ...r, status: 'enrolled', advisorNotes: advisorNote } : r
-    ));
+    const updatedReg: Registration = { ...reg, status: 'enrolled', advisorNotes: advisorNote };
+    setRegistrations(prev => prev.map(r => r.id === regId ? updatedReg : r));
+    await saveItemToFirestore('kb_academy_registrations', updatedReg);
 
     // Increment club enrolled count
-    setClubs(prev => prev.map(c => 
-      c.id === reg.clubId ? { ...c, enrolledCount: c.enrolledCount + 1 } : c
-    ));
+    const club = clubs.find(c => c.id === reg.clubId);
+    if (club) {
+      const updatedClub = { ...club, enrolledCount: club.enrolledCount + 1 };
+      setClubs(prev => prev.map(c => c.id === reg.clubId ? updatedClub : c));
+      await saveItemToFirestore('kb_academy_clubs', updatedClub);
+    }
 
     addToast('success', 'Application Approved', `${reg.studentName} has been enrolled in ${reg.clubName}.`);
   };
 
   // Advisor rejects application
-  const handleRejectRegistration = (regId: string, reason?: string) => {
+  const handleRejectRegistration = async (regId: string, reason?: string) => {
     const reg = registrations.find(r => r.id === regId);
     if (!reg) return;
 
-    setRegistrations(prev => prev.map(r => 
-      r.id === regId ? { ...r, status: 'declined', advisorNotes: reason } : r
-    ));
+    const updatedReg: Registration = { ...reg, status: 'declined', advisorNotes: reason };
+    setRegistrations(prev => prev.map(r => r.id === regId ? updatedReg : r));
+    await saveItemToFirestore('kb_academy_registrations', updatedReg);
 
     addToast('info', 'Application Declined', `Declined application for ${reg.studentName}.`);
   };
 
   // Advisor waitlists application
-  const handleWaitlistRegistration = (regId: string) => {
-    setRegistrations(prev => prev.map(r => 
-      r.id === regId ? { ...r, status: 'waitlisted' } : r
-    ));
+  const handleWaitlistRegistration = async (regId: string) => {
+    const reg = registrations.find(r => r.id === regId);
+    if (!reg) return;
+
+    const updatedReg: Registration = { ...reg, status: 'waitlisted' };
+    setRegistrations(prev => prev.map(r => r.id === regId ? updatedReg : r));
+    await saveItemToFirestore('kb_academy_registrations', updatedReg);
+
     addToast('warning', 'Applicant Waitlisted', 'Student moved to priority waitlist.');
   };
 
   // Student drops/withdraws from club
-  const handleDropClub = (registrationId: string) => {
+  const handleDropClub = async (registrationId: string) => {
     const reg = registrations.find(r => r.id === registrationId);
     if (!reg) return;
 
     setRegistrations(prev => prev.filter(r => r.id !== registrationId));
+    await deleteItemFromFirestore('kb_academy_registrations', registrationId);
 
     if (reg.status === 'enrolled') {
-      setClubs(prev => prev.map(c => 
-        c.id === reg.clubId ? { ...c, enrolledCount: Math.max(0, c.enrolledCount - 1) } : c
-      ));
+      const club = clubs.find(c => c.id === reg.clubId);
+      if (club) {
+        const updatedClub = { ...club, enrolledCount: Math.max(0, club.enrolledCount - 1) };
+        setClubs(prev => prev.map(c => c.id === reg.clubId ? updatedClub : c));
+        await saveItemToFirestore('kb_academy_clubs', updatedClub);
+      }
     }
 
     addToast('info', 'Registration Withdrawn', `You withdrew from ${reg.clubName}.`);
   };
 
   // Teacher submits live session attendance
-  const handleSaveAttendanceSession = (session: MeetingAttendanceSession) => {
+  const handleSaveAttendanceSession = async (session: MeetingAttendanceSession) => {
     setAttendanceSessions(prev => [session, ...prev]);
+    await saveItemToFirestore('kb_academy_attendance', session);
 
     // Update student attended counters
     const presentStudentIds = new Set(
       session.entries.filter(e => e.status === 'present').map(e => e.studentId)
     );
 
-    setRegistrations(prev => prev.map(r => {
+    for (const r of registrations) {
       if (r.clubId === session.clubId && r.status === 'enrolled') {
         const wasPresent = presentStudentIds.has(r.studentId);
-        return {
+        const updatedReg: Registration = {
           ...r,
           totalSessions: (r.totalSessions || 0) + 1,
           attendedSessions: (r.attendedSessions || 0) + (wasPresent ? 1 : 0),
         };
+        setRegistrations(prev => prev.map(item => item.id === updatedReg.id ? updatedReg : item));
+        await saveItemToFirestore('kb_academy_registrations', updatedReg);
       }
-      return r;
-    }));
+    }
 
     addToast('success', 'Attendance Finalized', `Recorded verified session for ${session.entries.length} students.`);
   };
 
   // Teacher or Director posts announcement
-  const handlePostAnnouncement = (announcementData: Omit<Announcement, 'id' | 'date'>) => {
+  const handlePostAnnouncement = async (announcementData: Omit<Announcement, 'id' | 'date'>) => {
     const newAnnouncement: Announcement = {
       ...announcementData,
       id: `ann-${Date.now()}`,
       date: 'Just now',
     };
     setAnnouncements(prev => [newAnnouncement, ...prev]);
+    await saveItemToFirestore('kb_academy_announcements', newAnnouncement);
     addToast('success', 'Bulletin Published', 'Sent notice to all registered members.');
   };
 
   // Director approves new club charter
-  const handleApproveProposal = (proposalId: string, assignedRoom: string, approvedBudget: number) => {
+  const handleApproveProposal = async (proposalId: string, assignedRoom: string, approvedBudget: number) => {
     const prop = proposals.find(p => p.id === proposalId);
     if (!prop) return;
 
     // Update proposal
-    setProposals(prev => prev.map(p => 
-      p.id === proposalId ? {
-        ...p,
-        directorStatus: 'approved',
-        assignedRoom,
-        approvedBudget,
-        directorFeedback: 'Charter petition approved by Highschool Director Mr. Wondwossen Erqiyhun. Official operational accreditation granted.'
-      } : p
-    ));
+    const updatedProp: ClubCharterProposal = {
+      ...prop,
+      directorStatus: 'approved' as const,
+      assignedRoom,
+      approvedBudget,
+      directorFeedback: 'Charter petition approved by Highschool Director Mr. Wondwossen Erqiyhun. Official operational accreditation granted.'
+    };
+    setProposals(prev => prev.map(p => p.id === proposalId ? updatedProp : p));
+    await saveItemToFirestore('kb_academy_proposals', updatedProp);
 
     // Create newly chartered club in clubs catalog!
-    const newClubId = `club-${prop.clubName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+    const newClubId = `club-${prop.clubName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
     const newClub: Club = {
       id: newClubId,
       name: prop.clubName,
@@ -620,6 +637,7 @@ export default function App() {
     };
 
     setClubs(prev => [newClub, ...prev]);
+    await saveItemToFirestore('kb_academy_clubs', newClub);
 
     // Automatically enroll the petitioner
     const foundingReg: Registration = {
@@ -640,24 +658,27 @@ export default function App() {
       totalSessions: 0
     };
     setRegistrations(prev => [foundingReg, ...prev]);
+    await saveItemToFirestore('kb_academy_registrations', foundingReg);
 
     addToast('success', 'Charter Accredited!', `"${prop.clubName}" is now an official active KB Academy organization.`);
   };
 
   // Director rejects proposal
-  const handleRejectProposal = (proposalId: string, feedback: string) => {
-    setProposals(prev => prev.map(p => 
-      p.id === proposalId ? {
-        ...p,
-        directorStatus: 'rejected',
-        directorFeedback: feedback
-      } : p
-    ));
+  const handleRejectProposal = async (proposalId: string, feedback: string) => {
+    const prop = proposals.find(p => p.id === proposalId);
+    if (!prop) return;
+    const updatedProp: ClubCharterProposal = {
+      ...prop,
+      directorStatus: 'rejected' as const,
+      directorFeedback: feedback
+    };
+    setProposals(prev => prev.map(p => p.id === proposalId ? updatedProp : p));
+    await saveItemToFirestore('kb_academy_proposals', updatedProp);
     addToast('info', 'Proposal Declined', 'Petitioner has been notified of the director feedback.');
   };
 
   // Student submits charter proposal
-  const handleCreateProposal = (proposalData: Omit<ClubCharterProposal, 'id' | 'submissionDate' | 'directorStatus'>) => {
+  const handleCreateProposal = async (proposalData: Omit<ClubCharterProposal, 'id' | 'submissionDate' | 'directorStatus'>) => {
     const newProp: ClubCharterProposal = {
       ...proposalData,
       id: `prop-${Date.now()}`,
@@ -666,27 +687,30 @@ export default function App() {
     };
 
     setProposals(prev => [newProp, ...prev]);
+    await saveItemToFirestore('kb_academy_proposals', newProp);
     setIsNewCharterModalOpen(false);
     addToast('success', 'Charter Petition Submitted', 'Transmitted to Highschool Director Mr. Wondwossen Erqiyhun for official evaluation.');
   };
 
   // Director updates capacity
-  const handleUpdateClubCapacity = (clubId: string, newCapacity: number) => {
-    setClubs(prev => prev.map(c => 
-      c.id === clubId ? { ...c, capacity: newCapacity } : c
-    ));
+  const handleUpdateClubCapacity = async (clubId: string, newCapacity: number) => {
+    const club = clubs.find(c => c.id === clubId);
+    if (!club) return;
+    const updatedClub = { ...club, capacity: newCapacity };
+    setClubs(prev => prev.map(c => c.id === clubId ? updatedClub : c));
+    await saveItemToFirestore('kb_academy_clubs', updatedClub);
     addToast('info', 'Capacity Updated', `Adjusted seat cap to ${newCapacity}.`);
   };
 
   // Director toggles club status
-  const handleToggleClubStatus = (clubId: string) => {
-    setClubs(prev => prev.map(c => {
-      if (c.id === clubId) {
-        const nextStatus = c.status === 'Active' ? 'Registration Closed' : 'Active';
-        return { ...c, status: nextStatus };
-      }
-      return c;
-    }));
+  const handleToggleClubStatus = async (clubId: string) => {
+    const club = clubs.find(c => c.id === clubId);
+    if (!club) return;
+    const nextStatus = club.status === 'Active' ? ('Registration Closed' as const) : ('Active' as const);
+    const updatedClub: Club = { ...club, status: nextStatus };
+    setClubs(prev => prev.map(c => c.id === clubId ? updatedClub : c));
+    await saveItemToFirestore('kb_academy_clubs', updatedClub);
+    addToast('info', 'Status Updated', `Club status changed to ${nextStatus}.`);
   };
 
   // Reset to initial demo data

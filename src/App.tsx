@@ -40,10 +40,16 @@ import { ClubOwnerRegistrationPortalModal } from './components/ClubOwnerRegistra
 import { 
   subscribeToCollection, 
   saveItemToFirestore, 
-  deleteItemFromFirestore,
+  deleteItemFromFirestore, 
   seedInitialDataIfEmpty 
 } from './services/firestoreService';
-import { ArrowLeft, Home, Compass } from 'lucide-react';
+import { 
+  DEFAULT_KB_LOGO, 
+  DEFAULT_STEM_PHOTO, 
+  DEFAULT_AEROSPACE_PHOTO, 
+  sanitizeImageUrl 
+} from './utils/imageFallback';
+import { ArrowLeft, Home, Compass, Settings, ShieldCheck, Check } from 'lucide-react';
 
 export default function App() {
   // 1. Navigation and Role View States
@@ -146,12 +152,15 @@ export default function App() {
               title: 'Regional Question and Answer Champions ',
               summary: 'Our proud and outstanding students remarkable achievements , We are proud of you ',
               content: 'Our proud and outstanding students remarkable achievements , We are proud of you . Congratulations to all participating scholars and faculty mentors on bringing home the championship title.',
-              coverImage: 'https://cdn.phototourl.com/free/2026-09-20-27a9f26b-61b4-4adf-8ed5-16e5600b89d1.jpg',
+              coverImage: DEFAULT_STEM_PHOTO,
               authorName: 'Mr. Fasil',
               authorRole: 'Faculty Advisor',
               badgeText: '🏆 REGIONAL CHAMPIONS',
               category: 'Championship'
             };
+          }
+          if (a.coverImage && (a.coverImage.includes('phototourl.com') || a.coverImage.includes('https://...'))) {
+            return { ...a, coverImage: DEFAULT_STEM_PHOTO };
           }
           return a;
         });
@@ -187,7 +196,13 @@ export default function App() {
   const [websiteContent, setWebsiteContent] = useState<WebsiteContent>(() => {
     try {
       const saved = localStorage.getItem('kb_academy_v2_website_content');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed: WebsiteContent = JSON.parse(saved);
+        return {
+          ...parsed,
+          kbLogoUrl: sanitizeImageUrl(parsed.kbLogoUrl, DEFAULT_KB_LOGO)
+        };
+      }
       return INITIAL_WEBSITE_CONTENT;
     } catch {
       return INITIAL_WEBSITE_CONTENT;
@@ -213,7 +228,15 @@ export default function App() {
     seedAndSubscribe();
 
     const unsubClubs = subscribeToCollection<Club>('kb_academy_clubs', (items) => {
-      if (items.length > 0) setClubs(items);
+      if (items.length > 0) {
+        const sanitized = items.map(c => {
+          if (c.coverImage && (c.coverImage.includes('phototourl.com') || c.coverImage.includes('517976487502') || c.coverImage.includes('https://...'))) {
+            return { ...c, coverImage: c.id === 'club-aerospace' ? DEFAULT_AEROSPACE_PHOTO : DEFAULT_STEM_PHOTO };
+          }
+          return c;
+        });
+        setClubs(sanitized);
+      }
     });
     const unsubRegs = subscribeToCollection<Registration>('kb_academy_registrations', (items) => {
       if (items.length > 0) setRegistrations(items);
@@ -222,7 +245,15 @@ export default function App() {
       if (items.length > 0) setProposals(items);
     });
     const unsubAnn = subscribeToCollection<Announcement>('kb_academy_announcements', (items) => {
-      if (items.length > 0) setAnnouncements(items);
+      if (items.length > 0) {
+        const sanitized = items.map(a => {
+          if (a.coverImage && (a.coverImage.includes('phototourl.com') || a.coverImage.includes('https://...'))) {
+            return { ...a, coverImage: DEFAULT_STEM_PHOTO };
+          }
+          return a;
+        });
+        setAnnouncements(sanitized);
+      }
     });
     const unsubStudents = subscribeToCollection<StudentAccount>('kb_academy_student_accounts', (items) => {
       if (items.length > 0) setStudentAccounts(items);
@@ -286,27 +317,41 @@ export default function App() {
           title: 'Regional Question and Answer Champions ',
           summary: 'Our proud and outstanding students remarkable achievements , We are proud of you ',
           content: 'Our proud and outstanding students remarkable achievements , We are proud of you . Congratulations to all participating scholars and faculty mentors on bringing home the championship title.',
-          coverImage: 'https://cdn.phototourl.com/free/2026-09-20-27a9f26b-61b4-4adf-8ed5-16e5600b89d1.jpg',
+          coverImage: DEFAULT_STEM_PHOTO,
           authorName: 'Mr. Fasil',
           authorRole: 'Faculty Advisor',
           badgeText: '🏆 REGIONAL CHAMPIONS',
           category: 'Championship'
         };
       }
+      if (a.coverImage && (a.coverImage.includes('phototourl.com') || a.coverImage.includes('https://...'))) {
+        return { ...a, coverImage: DEFAULT_STEM_PHOTO };
+      }
       return a;
     }));
 
     setClubs(prev => prev.map(c => {
+      let updated = { ...c };
       if (!c.advisorName || c.advisorName === 'Faculty Advisor' || c.id === 'club-robotics' || c.id === 'club-aerospace') {
-        return {
-          ...c,
+        updated = {
+          ...updated,
           advisorName: 'Mr. Fasil',
           advisorEmail: 'fasil@kbacademy.edu',
           advisorTitle: 'Faculty Advisor'
         };
       }
-      return c;
+      if (c.id === 'club-aerospace' && (c.coverImage.includes('517976487502') || c.coverImage.includes('phototourl.com'))) {
+        updated.coverImage = DEFAULT_AEROSPACE_PHOTO;
+      }
+      return updated;
     }));
+
+    setWebsiteContent(prev => {
+      if (!prev.kbLogoUrl || prev.kbLogoUrl.includes('phototourl.com') || prev.kbLogoUrl.includes('kb-academy-logo.svg') || prev.kbLogoUrl.includes('https://...')) {
+        return { ...prev, kbLogoUrl: DEFAULT_KB_LOGO };
+      }
+      return prev;
+    });
   }, []);
 
   // Save student state
@@ -803,11 +848,57 @@ export default function App() {
                 <span>← Back to Main Website</span>
               </button>
 
-              <div className="flex items-center gap-3 text-xs text-zinc-400">
-                <span>Active Portal:</span>
-                <span className="px-2.5 py-1 rounded-lg bg-[#0c0d12] border border-[#2b3040] text-amber-300 font-bold uppercase text-[11px]">
-                  {activeRole === 'student' ? 'High School Student Portal' : activeRole === 'teacher' ? 'Faculty Advisor Portal' : 'Student Life Director'}
-                </span>
+              <div className="flex items-center gap-3 text-xs text-zinc-400 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <span>Active Portal:</span>
+                  <span className="px-2.5 py-1 rounded-lg bg-[#0c0d12] border border-[#2b3040] text-amber-300 font-bold uppercase text-[11px]">
+                    {activeRole === 'student' ? 'High School Student Portal' : activeRole === 'teacher' ? 'Faculty Advisor Portal' : 'Student Life Director'}
+                  </span>
+                </div>
+
+                {/* Club Owner Settings in Upper Right */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsAdminModalOpen(true)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm border ${
+                      isAdminAuthenticated 
+                        ? 'bg-emerald-600/30 text-emerald-300 border-emerald-500/60'
+                        : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/50'
+                    }`}
+                    id="btn-global-admin-settings"
+                  >
+                    <Settings className={`w-3.5 h-3.5 ${isAdminAuthenticated ? 'text-emerald-400 animate-spin' : 'text-amber-400'}`} />
+                    <span>{isAdminAuthenticated ? 'Club Owner Mode Active' : 'Club Owner Settings'}</span>
+                  </button>
+
+                  {isAdminAuthenticated && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setIsClubOwnerPortalModalOpen(true)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-extrabold transition-all cursor-pointer shadow-md animate-pulse"
+                        id="btn-global-club-owner-portal"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Requests ({registrations.filter(r => r.status === 'pending').length})</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsAdminAuthenticated(false);
+                          addToast('success', 'Club Owner Mode Saved & Exited', 'Your changes have been saved and admin mode closed securely.');
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all cursor-pointer shadow-md"
+                        id="btn-global-save-exit"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Save & Exit</span>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 

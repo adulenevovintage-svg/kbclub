@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { WebsiteContent, Club, ClubCategory } from '../types';
 import { INITIAL_WEBSITE_CONTENT } from '../data/mockData';
+import { DEFAULT_KB_LOGO, DEFAULT_CLUB_COVER, handleImageError } from '../utils/imageFallback';
 
 interface AdminEditModalProps {
   isOpen: boolean;
@@ -871,8 +872,9 @@ export const AdminEditModal: React.FC<AdminEditModalProps> = ({
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                       <div className="w-20 h-20 rounded-2xl bg-white p-2 border border-amber-300 shadow-sm flex items-center justify-center shrink-0">
                         <img
-                          src={draftContent.kbLogoUrl}
+                          src={draftContent.kbLogoUrl || DEFAULT_KB_LOGO}
                           alt="Crest preview"
+                          onError={(e) => handleImageError(e, DEFAULT_KB_LOGO)}
                           className="w-full h-full object-contain"
                         />
                       </div>

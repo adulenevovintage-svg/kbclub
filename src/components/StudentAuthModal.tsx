@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StudentAccount } from '../types';
 import { AmharicAvatarPicker } from './AmharicAvatarPicker';
 import { generateAmharicAvatarDataUrl, getSuggestedAmharicLetter } from '../utils/amharicAvatars';
+import { DEFAULT_KB_LOGO, handleImageError } from '../utils/imageFallback';
 import { 
   X, 
   GraduationCap, 
@@ -609,8 +610,9 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-white p-0.5 border border-amber-400">
                       <img 
-                        src="https://cdn.phototourl.com/free/2026-09-19-d8f0f13c-5886-4de1-b7ba-8996d63ce1a3.jpg" 
+                        src={DEFAULT_KB_LOGO} 
                         alt="KB"
+                        onError={(e) => handleImageError(e, DEFAULT_KB_LOGO)}
                         className="w-full h-full object-contain"
                       />
                     </div>

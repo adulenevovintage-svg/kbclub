@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   ArrowLeft
 } from 'lucide-react';
+import { DEFAULT_KB_LOGO, handleImageError } from '../utils/imageFallback';
 
 interface NavbarProps {
   currentView: 'landing' | 'operations';
@@ -83,9 +84,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <div className="relative w-10 h-10 rounded-lg bg-white border border-[#c5832b]/50 p-0.5 flex items-center justify-center shadow-sm group-hover:border-[#c5832b] transition-colors overflow-hidden">
               <img 
-                src="https://cdn.phototourl.com/free/2026-09-19-d8f0f13c-5886-4de1-b7ba-8996d63ce1a3.jpg"
+                src={DEFAULT_KB_LOGO}
                 alt="KB Academy Logo"
                 referrerPolicy="no-referrer"
+                onError={(e) => handleImageError(e, DEFAULT_KB_LOGO)}
                 className="w-full h-full object-contain"
               />
               <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-[#c5832b] rounded-full border-2 border-white"></div>

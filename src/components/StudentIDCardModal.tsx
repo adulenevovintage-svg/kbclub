@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { UserProfile, StudentAccount } from '../types';
 import { X, Copy, Check, QrCode, ShieldCheck, Printer, Download, Sparkles } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { DEFAULT_KB_LOGO, handleImageError } from '../utils/imageFallback';
 
 interface StudentIDCardModalProps {
   isOpen: boolean;
@@ -92,8 +93,9 @@ export const StudentIDCardModal: React.FC<StudentIDCardModalProps> = ({
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-white p-0.5 border border-amber-400 flex items-center justify-center">
                 <img 
-                  src="https://cdn.phototourl.com/free/2026-09-19-d8f0f13c-5886-4de1-b7ba-8996d63ce1a3.jpg" 
+                  src={DEFAULT_KB_LOGO} 
                   alt="KB"
+                  onError={(e) => handleImageError(e, DEFAULT_KB_LOGO)}
                   className="w-full h-full object-contain"
                 />
               </div>

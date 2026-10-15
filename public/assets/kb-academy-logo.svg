@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#1e2433"/>
+      <stop offset="60%" stop-color="#121622"/>
+      <stop offset="100%" stop-color="#0a0c14"/>
+    </radialGradient>
+
+    <!-- Gold Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe699"/>
+      <stop offset="25%" stop-color="#e5b044"/>
+      <stop offset="50%" stop-color="#c5832b"/>
+      <stop offset="75%" stop-color="#dfa53c"/>
+      <stop offset="100%" stop-color="#8c5310"/>
+    </linearGradient>
+
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff2b3"/>
+      <stop offset="50%" stop-color="#d99933"/>
+      <stop offset="100%" stop-color="#9a5e12"/>
+    </linearGradient>
+
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a2030"/>
+      <stop offset="50%" stop-color="#121622"/>
+      <stop offset="100%" stop-color="#0b0e16"/>
+    </linearGradient>
+
+    <!-- Ribbon Gradient -->
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8c5310"/>
+      <stop offset="20%" stop-color="#c5832b"/>
+      <stop offset="50%" stop-color="#ffd56b"/>
+      <stop offset="80%" stop-color="#c5832b"/>
+      <stop offset="100%" stop-color="#8c5310"/>
+    </linearGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="shadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Dark Circle -->
+  <circle cx="250" cy="250" r="236" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="8" filter="url(#shadow)"/>
+
+  <!-- Beaded Inner Border -->
+  <circle cx="250" cy="250" r="218" fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="3, 5"/>
+  <circle cx="250" cy="250" r="210" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+
+  <!-- Academic Laurel Leaves (Left) -->
+  <g fill="url(#goldLight)" opacity="0.9" filter="url(#shadow)">
+    <path d="M 125,230 C 110,215 95,200 102,175 C 115,190 120,210 125,230 Z"/>
+    <path d="M 120,220 C 95,215 85,200 88,180 C 105,188 115,205 120,220 Z"/>
+    <path d="M 112,260 C 92,250 82,230 88,210 C 102,225 110,245 112,260 Z"/>
+    <path d="M 115,290 C 95,285 88,270 92,250 C 105,265 112,280 115,290 Z"/>
+    <path d="M 125,325 C 105,325 98,310 105,290 C 118,305 122,318 125,325 Z"/>
+    <path d="M 145,360 C 125,365 118,350 125,330 C 138,342 142,352 145,360 Z"/>
+    <path d="M 175,390 C 155,400 145,385 152,365 C 165,375 172,385 175,390 Z"/>
+  </g>
+
+  <!-- Academic Laurel Leaves (Right) -->
+  <g fill="url(#goldLight)" opacity="0.9" filter="url(#shadow)">
+    <path d="M 375,230 C 390,215 405,200 398,175 C 385,190 380,210 375,230 Z"/>
+    <path d="M 380,220 C 405,215 415,200 412,180 C 395,188 385,205 380,220 Z"/>
+    <path d="M 388,260 C 408,250 418,230 412,210 C 398,225 390,245 388,260 Z"/>
+    <path d="M 385,290 C 405,285 412,270 408,250 C 395,265 388,280 385,290 Z"/>
+    <path d="M 375,325 C 395,325 402,310 395,290 C 382,305 378,318 375,325 Z"/>
+    <path d="M 355,360 C 375,365 382,350 375,330 C 362,342 358,352 355,360 Z"/>
+    <path d="M 325,390 C 345,400 355,385 348,365 C 335,375 328,385 325,390 Z"/>
+  </g>
+
+  <!-- Central Heraldic Shield -->
+  <g filter="url(#shadow)">
+    <!-- Outer Shield Border -->
+    <path d="M 160,140 L 340,140 C 340,140 345,260 250,335 C 155,260 160,140 160,140 Z" 
+          fill="url(#goldGrad)" stroke="#663c08" stroke-width="2"/>
+    <!-- Inner Shield Body -->
+    <path d="M 167,146 L 333,146 C 333,146 338,254 250,323 C 162,254 167,146 167,146 Z" 
+          fill="url(#shieldGrad)"/>
+    <!-- Shield Quadrant Dividing Lines -->
+    <path d="M 250,146 L 250,320 M 167,222 L 333,222" 
+          stroke="url(#goldGrad)" stroke-width="3" opacity="0.8"/>
+  </g>
+
+  <!-- Top-Left Icon: Torch of Knowledge & Wisdom -->
+  <g transform="translate(192, 172) scale(0.65)">
+    <!-- Flame -->
+    <path d="M 25,0 C 30,12 40,18 32,32 C 28,38 20,40 18,34 C 15,28 20,20 18,12 C 16,6 22,2 25,0 Z" fill="url(#goldLight)"/>
+    <!-- Torch Bowl -->
+    <path d="M 8,32 L 42,32 L 35,48 L 15,48 Z" fill="url(#goldGrad)"/>
+    <!-- Torch Handle -->
+    <path d="M 21,48 L 29,48 L 27,78 L 23,78 Z" fill="url(#goldLight)"/>
+  </g>
+
+  <!-- Top-Right Icon: Open Book of Academic Excellence -->
+  <g transform="translate(268, 172) scale(0.68)">
+    <path d="M 25,12 C 35,8 48,10 52,14 L 52,44 C 48,40 35,38 25,42 C 15,38 2,40 -2,44 L -2,14 C 2,10 15,8 25,12 Z" 
+          fill="url(#goldLight)" stroke="#523105" stroke-width="1.5"/>
+    <path d="M 25,12 L 25,42" stroke="#523105" stroke-width="2"/>
+    <!-- Lines in book -->
+    <line x1="6" y1="20" x2="20" y2="18" stroke="#7a4907" stroke-width="1.5"/>
+    <line x1="6" y1="26" x2="20" y2="24" stroke="#7a4907" stroke-width="1.5"/>
+    <line x1="30" y1="18" x2="44" y2="20" stroke="#7a4907" stroke-width="1.5"/>
+    <line x1="30" y1="24" x2="44" y2="26" stroke="#7a4907" stroke-width="1.5"/>
+  </g>
+
+  <!-- Bottom-Left Icon: Science / Atom Orbit (STEM Leadership) -->
+  <g transform="translate(193, 252) scale(0.65)">
+    <ellipse cx="25" cy="25" rx="22" ry="8" fill="none" stroke="url(#goldLight)" stroke-width="2.5" transform="rotate(30 25 25)"/>
+    <ellipse cx="25" cy="25" rx="22" ry="8" fill="none" stroke="url(#goldLight)" stroke-width="2.5" transform="rotate(-30 25 25)"/>
+    <circle cx="25" cy="25" r="4.5" fill="url(#goldLight)"/>
+  </g>
+
+  <!-- Bottom-Right Icon: Star of Rigor & Integrity -->
+  <g transform="translate(272, 250) scale(0.65)">
+    <polygon points="25,2 32,18 49,18 35,29 40,46 25,36 10,46 15,29 1,18 18,18" 
+             fill="url(#goldLight)" stroke="#663c08" stroke-width="1.5"/>
+  </g>
+
+  <!-- Center "KB" Monogram Emblem -->
+  <g filter="url(#shadow)">
+    <circle cx="250" cy="222" r="32" fill="#0c0e14" stroke="url(#goldGrad)" stroke-width="4"/>
+    <circle cx="250" cy="222" r="28" fill="#141824" stroke="url(#goldLight)" stroke-width="1.5"/>
+    <!-- KB Monogram Text -->
+    <text x="250" y="233" 
+          font-family="'Cinzel', 'Times New Roman', Georgia, serif" 
+          font-size="28" 
+          font-weight="900" 
+          text-anchor="middle" 
+          fill="url(#goldLight)" 
+          stroke="#422402" 
+          stroke-width="1"
+          letter-spacing="2">KB</text>
+  </g>
+
+  <!-- Crest Crown / Top Crest Accent -->
+  <g transform="translate(250, 118)" filter="url(#shadow)">
+    <polygon points="0,-18 14,-2 28,-18 20,8 -20,8 -28,-18 -14,-2" fill="url(#goldGrad)" stroke="#523105" stroke-width="1.5"/>
+    <circle cx="0" cy="-18" r="3" fill="#ffffff"/>
+    <circle cx="-28" cy="-18" r="3" fill="#ffffff"/>
+    <circle cx="28" cy="-18" r="3" fill="#ffffff"/>
+    <rect x="-18" y="8" width="36" height="5" rx="2" fill="url(#goldLight)"/>
+  </g>
+
+  <!-- Upper Banner Arc: "KB ACADEMY" -->
+  <path id="textArcTop" d="M 85,250 A 165,165 0 0,1 415,250" fill="none"/>
+  <text font-family="'Cinzel', 'Times New Roman', Georgia, serif" 
+        font-size="29" 
+        font-weight="900" 
+        fill="url(#goldLight)" 
+        stroke="#2d1902" 
+        stroke-width="1"
+        letter-spacing="7" 
+        filter="url(#shadow)">
+    <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+      KB ACADEMY
+    </textPath>
+  </text>
+
+  <!-- Heraldic Ribbon at Bottom: "FOUNDED 2026 • ADDIS ABABA" -->
+  <g filter="url(#shadow)" transform="translate(0, 30)">
+    <!-- Ribbon Ends -->
+    <path d="M 80,390 L 120,370 L 120,410 L 80,430 L 95,410 Z" fill="#6d3f08" stroke="#331c02" stroke-width="1.5"/>
+    <path d="M 420,390 L 380,370 L 380,410 L 420,430 L 405,410 Z" fill="#6d3f08" stroke="#331c02" stroke-width="1.5"/>
+
+    <!-- Ribbon Main Body -->
+    <path d="M 110,380 C 180,400 320,400 390,380 L 390,415 C 320,435 180,435 110,415 Z" 
+          fill="url(#ribbonGrad)" stroke="#4d2c05" stroke-width="2"/>
+
+    <!-- Ribbon Highlight Line -->
+    <path d="M 118,386 C 185,404 315,404 382,386" fill="none" stroke="#fff3b8" stroke-width="1.5" opacity="0.8"/>
+
+    <!-- Ribbon Text -->
+    <text x="250" y="407" 
+          font-family="'Plus Jakarta Sans', Arial, sans-serif" 
+          font-size="13" 
+          font-weight="800" 
+          text-anchor="middle" 
+          fill="#1c1103" 
+          letter-spacing="3.5">
+      EST. 2026 • ADDIS ABABA
+    </text>
+  </g>
+
+  <!-- Stars on Lower Border -->
+  <g fill="url(#goldLight)" transform="translate(0, 15)">
+    <polygon points="120,340 123,347 130,347 124,352 126,359 120,354 114,359 116,352 110,347 117,347" />
+    <polygon points="380,340 383,347 390,347 384,352 386,359 380,354 374,359 376,352 370,347 377,347" />
+  </g>
+</svg>

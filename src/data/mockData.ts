@@ -287,7 +287,7 @@ const rawClubs: Club[] = [
     gradesEligible: [10, 11, 12],
     duesPerSemester: 0,
     prerequisites: 'Safety certification workshop during Week 1 required for launchpad access.',
-    coverImage: 'https://images.unsplash.com/photo-1517976487502-53b92dc1791a?w=800&auto=format&fit=crop&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=800&auto=format&fit=crop&q=80',
     tags: ['Aerospace', 'Rocketry', 'Telemetry', 'Avionics', 'NAR Certified'],
     status: 'Active',
     charterYear: 2021,
@@ -619,7 +619,7 @@ export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
     priority: 'high',
     category: 'Championship',
     badgeText: '🏆 REGIONAL CHAMPIONS',
-    coverImage: 'https://cdn.phototourl.com/free/2026-09-20-27a9f26b-61b4-4adf-8ed5-16e5600b89d1.jpg',
+    coverImage: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80',
     actionText: 'View Robotics Syndicate',
     actionType: 'catalog',
     isPinned: true,
@@ -716,7 +716,7 @@ export const INITIAL_SYSTEM_SETTINGS: SystemSettings = {
 };
 
 export const INITIAL_WEBSITE_CONTENT: WebsiteContent = {
-  kbLogoUrl: 'https://cdn.phototourl.com/free/2026-09-19-d8f0f13c-5886-4de1-b7ba-8996d63ce1a3.jpg',
+  kbLogoUrl: 'https://user19731.na.imgto.link/public/20261015/5a81947f64c76b222db29ac4-photo-2026-09-19-22-41-46.avif',
   realSchoolOps: {
     badge: 'Real School Operations',
     heading: 'Designed for real school logistics, not generic brochureware.',

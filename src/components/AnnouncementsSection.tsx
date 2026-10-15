@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   AlertCircle
 } from 'lucide-react';
+import { DEFAULT_STEM_PHOTO, handleImageError } from '../utils/imageFallback';
 
 interface AnnouncementsSectionProps {
   announcements: Announcement[];
@@ -52,7 +53,7 @@ export const AnnouncementsSection: React.FC<AnnouncementsSectionProps> = ({
   // Preset background images for quick creation
   const presetImages = [
     { label: 'Campus & Scholars', url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80' },
-    { label: 'Robotics & STEM', url: 'https://cdn.phototourl.com/free/2026-09-20-27a9f26b-61b4-4adf-8ed5-16e5600b89d1.jpg' },
+    { label: 'Robotics & STEM', url: DEFAULT_STEM_PHOTO },
     { label: 'Science & Labs', url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&auto=format&fit=crop&q=80' },
     { label: 'Debate & Chamber', url: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&auto=format&fit=crop&q=80' },
     { label: 'Fine Arts Studio', url: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&auto=format&fit=crop&q=80' },
@@ -255,6 +256,7 @@ export const AnnouncementsSection: React.FC<AnnouncementsSectionProps> = ({
                 src={heroAnnouncement.coverImage || presetImages[0].url} 
                 alt={heroAnnouncement.title}
                 referrerPolicy="no-referrer"
+                onError={(e) => handleImageError(e, DEFAULT_STEM_PHOTO)}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-90"
               />
               <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-[#0e1017]/80 via-transparent to-transparent" />
@@ -452,6 +454,7 @@ export const AnnouncementsSection: React.FC<AnnouncementsSectionProps> = ({
                 <img 
                   src={selectedAnnouncementForDetail.coverImage} 
                   alt={selectedAnnouncementForDetail.title} 
+                  onError={(e) => handleImageError(e, DEFAULT_STEM_PHOTO)}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />

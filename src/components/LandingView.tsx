@@ -33,6 +33,12 @@ import {
 } from 'lucide-react';
 import { PhotoEditModal } from './PhotoEditModal';
 import { AnnouncementsSection } from './AnnouncementsSection';
+import { 
+  DEFAULT_KB_LOGO, 
+  DEFAULT_CLUB_COVER, 
+  sanitizeImageUrl, 
+  handleImageError 
+} from '../utils/imageFallback';
 
 interface LandingViewProps {
   onEnterRole: (role: UserRole) => void;
@@ -65,8 +71,8 @@ export const LandingView: React.FC<LandingViewProps> = ({
   announcements = [],
   onUpdateAnnouncements = () => {},
 }) => {
-  const fallbackLogoUrl = 'https://cdn.phototourl.com/free/2026-09-19-d8f0f13c-5886-4de1-b7ba-8996d63ce1a3.jpg';
-  const kbLogoUrl = websiteContent?.kbLogoUrl || fallbackLogoUrl;
+  const fallbackLogoUrl = DEFAULT_KB_LOGO;
+  const kbLogoUrl = sanitizeImageUrl(websiteContent?.kbLogoUrl, fallbackLogoUrl);
 
   // Live editing mode state - strictly false by default, only true if admin authenticated and enabled
   const [isLiveEditing, setIsLiveEditing] = useState<boolean>(false);
@@ -235,6 +241,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                 src={kbLogoUrl}
                 alt="KB Academy Crest"
                 referrerPolicy="no-referrer"
+                onError={(e) => handleImageError(e, DEFAULT_KB_LOGO)}
                 className="w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 object-contain rounded-2xl"
               />
             </div>
@@ -665,6 +672,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                       src={club.coverImage} 
                       alt={club.name} 
                       referrerPolicy="no-referrer"
+                      onError={(e) => handleImageError(e, DEFAULT_CLUB_COVER)}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -942,6 +950,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               src={kbLogoUrl} 
               alt="KB Academy"
               referrerPolicy="no-referrer"
+              onError={(e) => handleImageError(e, DEFAULT_KB_LOGO)}
               className="w-7 h-7 rounded-lg object-contain bg-white border border-amber-300/70 p-0.5" 
             />
             <span className="text-zinc-600 font-medium">

@@ -272,52 +272,6 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               </div>
             )}
 
-            {onOpenAdminLogin && (
-              <div className="relative inline-block group">
-                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-40 px-3.5 py-2 rounded-xl bg-[#14161f] text-purple-300 border border-purple-500/40 text-xs font-semibold whitespace-nowrap shadow-2xl pointer-events-none">
-                  🔑 Access Administrative Controls & Club Review Dashboard
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenAdminLogin) onOpenAdminLogin();
-                  }}
-                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm border ${
-                    isAdminAuthenticated 
-                      ? 'bg-emerald-600/30 text-emerald-300 border-emerald-500/60'
-                      : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/50'
-                  }`}
-                  id="btn-student-portal-admin-settings"
-                >
-                  <Settings className={`w-4 h-4 ${isAdminAuthenticated ? 'text-emerald-400 animate-spin' : 'text-amber-400'}`} />
-                  <span>{isAdminAuthenticated ? 'Club Owner Mode Active' : 'Club Owner Settings'}</span>
-                </button>
-              </div>
-            )}
-
-            {isAdminAuthenticated && onOpenClubOwnerPortal && (
-              <button
-                type="button"
-                onClick={onOpenClubOwnerPortal}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-extrabold transition-all cursor-pointer shadow-lg animate-pulse"
-                id="btn-club-owner-registration-portal"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Review Registration Requests ({pendingRegistrationsCount || 0})</span>
-              </button>
-            )}
-
-            {isAdminAuthenticated && onSaveAndExitAdmin && (
-              <button
-                type="button"
-                onClick={onSaveAndExitAdmin}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all cursor-pointer shadow-lg"
-                id="btn-club-owner-save-exit"
-              >
-                <Check className="w-4 h-4" />
-                <span>Save & Exit Club Owner Mode</span>
-              </button>
-            )}
           </div>
 
           <div className="relative inline-block group">

@@ -62,7 +62,7 @@ export const PhotoEditModal: React.FC<PhotoEditModalProps> = ({
     { label: 'Robotics Lab', url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80' },
     { label: 'Debate Chamber', url: 'https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=800&auto=format&fit=crop&q=80' },
     { label: 'Art Studio', url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&auto=format&fit=crop&q=80' },
-    { label: 'Aerospace Bay', url: 'https://images.unsplash.com/photo-1517976487502-53b92dc1791a?w=800&auto=format&fit=crop&q=80' },
+    { label: 'Aerospace Bay', url: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=800&auto=format&fit=crop&q=80' },
     { label: 'Model UN Hall', url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&auto=format&fit=crop&q=80' },
     { label: 'Computer Lab', url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80' },
   ];

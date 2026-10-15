@@ -5,18 +5,22 @@ import {
   setDoc, 
   updateDoc, 
   deleteDoc, 
-  onSnapshot 
+  onSnapshot,
+  query,
+  QueryConstraint
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export const subscribeToCollection = <T>(
   collectionName: string, 
   onData: (items: T[]) => void, 
-  onError?: (err: any) => void
+  onError?: (err: any) => void,
+  constraints: QueryConstraint[] = []
 ) => {
   try {
     const colRef = collection(db, collectionName);
-    return onSnapshot(colRef, (snapshot) => {
+    const q = query(colRef, ...constraints);
+    return onSnapshot(q, (snapshot) => {
       const items: T[] = [];
       snapshot.forEach((docSnap) => {
         items.push({ id: docSnap.id, ...docSnap.data() } as unknown as T);

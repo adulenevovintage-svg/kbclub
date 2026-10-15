@@ -23,6 +23,7 @@ interface ClubDetailModalProps {
   isEnrolled: boolean;
   isPending: boolean;
   hasConflict: boolean;
+  isAtLimit: boolean;
   conflictDetails?: { clubName: string; day: string; time: string };
 }
 
@@ -33,6 +34,7 @@ export const ClubDetailModal: React.FC<ClubDetailModalProps> = ({
   isEnrolled,
   isPending,
   hasConflict,
+  isAtLimit,
   conflictDetails,
 }) => {
   if (!club) return null;
@@ -120,14 +122,15 @@ export const ClubDetailModal: React.FC<ClubDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Schedule Conflict Notice */}
-          {hasConflict && conflictDetails && (
+          {/* Schedule Conflict or Limit Notice */}
+          {(hasConflict || (isAtLimit && !isEnrolled && !isPending)) && (
             <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold">Schedule Collision Alert:</span> This club meets concurrently with your enrolled club{' '}
-                <strong>{conflictDetails.clubName}</strong> on {conflictDetails.day} ({conflictDetails.time}).
-                KB Academy requires non-overlapping commitments.
+                <span className="font-bold">{hasConflict ? 'Schedule Collision Alert:' : 'Registration Limit Reached:'}</span>{' '}
+                {hasConflict 
+                  ? `This club meets concurrently with your enrolled club ${conflictDetails?.clubName} on ${conflictDetails?.day} (${conflictDetails?.time}). KB Academy requires non-overlapping commitments.`
+                  : 'You have already reached the maximum enrollment limit of 3 clubs.'}
               </div>
             </div>
           )}
@@ -228,9 +231,9 @@ export const ClubDetailModal: React.FC<ClubDetailModalProps> = ({
                     onClose();
                     onRegisterClick(club);
                   }}
-                  disabled={hasConflict}
+                  disabled={hasConflict || (isAtLimit && !isEnrolled && !isPending)}
                   className={`px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                    hasConflict
+                    (hasConflict || (isAtLimit && !isEnrolled && !isPending))
                       ? 'bg-[#1f232c] text-zinc-500 cursor-not-allowed'
                       : isFull
                       ? 'bg-amber-600 hover:bg-amber-700 text-white'

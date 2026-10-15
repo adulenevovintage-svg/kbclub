@@ -985,6 +985,7 @@ export default function App() {
           isEnrolled={isDetailClubEnrolled}
           isPending={isDetailClubPending}
           hasConflict={!!detailClubConflict && !isDetailClubEnrolled}
+          isAtLimit={registrations.filter(r => r.status === 'enrolled' && r.studentId === users.student.id).length >= 3}
           conflictDetails={detailClubConflict}
         />
       )}

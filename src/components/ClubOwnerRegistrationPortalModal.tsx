@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
 import { Registration, Club } from '../types';
-import { ShieldCheck, CheckCircle2, XCircle, Clock, Users, X, Search, Check, AlertCircle } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, XCircle, Clock, Users, X, Search, Check, AlertCircle, FileDown } from 'lucide-react';
 
 interface ClubOwnerRegistrationPortalModalProps {
   isOpen: boolean;
@@ -34,6 +35,23 @@ export const ClubOwnerRegistrationPortalModal: React.FC<ClubOwnerRegistrationPor
   });
 
   const pendingCount = registrations.filter(r => r.status === 'pending').length;
+
+  const exportToExcel = () => {
+    const enrolledStudents = registrations
+        .filter(r => r.status === 'enrolled')
+        .map(r => ({
+            "Student Name": r.studentName,
+            "Grade": r.studentGrade,
+            "Email": r.studentEmail,
+            "Club": r.clubName,
+            "Registration Date": r.registrationDate
+        }));
+
+    const worksheet = XLSX.utils.json_to_sheet(enrolledStudents);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Enrolled Students");
+    XLSX.writeFile(workbook, "Enrolled_Students.xlsx");
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -95,6 +113,15 @@ export const ClubOwnerRegistrationPortalModal: React.FC<ClubOwnerRegistrationPor
             >
               All Records ({registrations.length})
             </button>
+            {filterStatus === 'all' && (
+              <button
+                onClick={exportToExcel}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-all cursor-pointer shadow-md"
+              >
+                <FileDown className="w-3.5 h-3.5" />
+                Export
+              </button>
+            )}
           </div>
 
           <div className="relative w-full sm:w-64">

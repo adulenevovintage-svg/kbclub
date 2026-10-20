@@ -213,3 +213,11 @@ export interface UserProfile {
   studentIdNumber?: string;
   registeredAt?: string;
 }
+export interface JournalEntry {
+  id: string;
+  studentId: string;
+  clubId: string;
+  content: string;
+  date: string;
+  attachments?: string[];
+}

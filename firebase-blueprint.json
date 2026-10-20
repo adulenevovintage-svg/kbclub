@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "Club": {
+      "title": "Club",
+      "description": "Co-curricular club definition.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "category": { "type": "string" },
+        "tagline": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["id", "name", "code"]
+    },
+    "Registration": {
+      "title": "Registration",
+      "description": "Student club registration.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "clubId": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "studentId", "clubId", "status"]
+    },
+    "JournalEntry": {
+      "title": "Journal Entry",
+      "description": "A student's note or journal entry for a club activity.",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "clubId": { "type": "string" },
+        "content": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentId", "clubId", "content", "date"]
+    }
+  },
+  "firestore": {
+    "/kb_academy_clubs/{clubId}": {
+      "schema": "Club",
+      "description": "All academy clubs."
+    },
+    "/kb_academy_registrations/{regId}": {
+      "schema": "Registration",
+      "description": "All student registrations."
+    },
+    "/journal_entries/{entryId}": {
+      "schema": "JournalEntry",
+      "description": "Student journal entries."
+    }
+  }
+}

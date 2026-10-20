@@ -100,19 +100,26 @@ export default function App() {
   const [clubs, setClubs] = useState<Club[]>(() => {
     try {
       const saved = localStorage.getItem('kb_academy_v2_clubs');
+      let loadedClubs: Club[] = INITIAL_CLUBS;
       if (saved) {
         const parsed: Club[] = JSON.parse(saved);
-        return parsed.map(c => {
-          if (c.id === 'club-orchestra') {
-            return { ...c, coverImage: 'https://cdn.corenexis.com/f/RYaDtoR1mJP.webp' };
-          }
-          if (!c.advisorName || c.advisorName === 'Faculty Advisor' || c.id === 'club-robotics' || c.id === 'club-aerospace') {
-            return { ...c, advisorName: 'Mr. Fasil', advisorEmail: 'fasil@kbacademy.edu', advisorTitle: 'Faculty Advisor' };
-          }
-          return c;
-        });
+        if (parsed.length < 5) {
+          localStorage.setItem('kb_academy_v2_clubs', JSON.stringify(INITIAL_CLUBS));
+          return INITIAL_CLUBS;
+        }
+        const existingIds = new Set(parsed.map(c => c.id));
+        const missingInitial = INITIAL_CLUBS.filter(c => !existingIds.has(c.id));
+        loadedClubs = [...parsed, ...missingInitial];
       }
-      return INITIAL_CLUBS;
+      return loadedClubs.map(c => {
+        if (c.id === 'club-orchestra') {
+          return { ...c, coverImage: 'https://cdn.corenexis.com/f/RYaDtoR1mJP.webp' };
+        }
+        if (!c.advisorName || c.advisorName === 'Faculty Advisor' || c.id === 'club-robotics' || c.id === 'club-aerospace') {
+          return { ...c, advisorName: 'Mr. Fasil', advisorEmail: 'fasil@kbacademy.edu', advisorTitle: 'Faculty Advisor' };
+        }
+        return c;
+      });
     } catch {
       return INITIAL_CLUBS;
     }

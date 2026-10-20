@@ -460,6 +460,120 @@ const rawClubs: Club[] = [
     upcomingMeetings: [
       { id: 'm-1001', title: 'Inequality Proofs & Cauchy-Schwarz Masterclass', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Pavilion 405', agenda: 'Walkthrough of past national selection test problems.' }
     ]
+  },
+  {
+    id: 'club-theater',
+    name: 'KB Academy Repertory Theater & Dramatic Arts Guild',
+    code: 'KB-THR-11',
+    category: 'Arts & Performance',
+    tagline: 'Classical and contemporary stage performance, script analysis, and theatrical production.',
+    description: 'A dynamic dramatic arts syndicate fostering stage presence, vocal projection, stagecraft, and emotive storytelling. Members produce annual fall plays and spring musicals, gaining hands-on experience in acting, set design, lighting, and sound engineering.',
+    advisorName: 'W/ro Genet Wolde',
+    advisorEmail: 'g.wolde@kbacademy.edu',
+    advisorTitle: 'Director of Performing Arts',
+    studentPresident: 'Tigist Mamo (Gr. 12)',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
+    room: 'Main Auditorium Stage',
+    building: 'Performing Arts Conservatory',
+    capacity: 35,
+    enrolledCount: 28,
+    gradesEligible: [9, 10, 11, 12],
+    duesPerSemester: 0,
+    prerequisites: 'Enthusiasm for performance, stagecraft, or backstage technical production.',
+    coverImage: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&auto=format&fit=crop&q=80',
+    tags: ['Theater', 'Drama', 'Acting', 'Stagecraft', 'Performance'],
+    status: 'Active',
+    charterYear: 2015,
+    allocatedBudget: 5000,
+    syllabus: [
+      { week: 1, topic: 'Vocal Projection & Emotional Subtext', objective: 'Master breath support and character motivation in dramatic monologues.' },
+      { week: 2, topic: 'Stage Blocking & Spatial Awareness', objective: 'Execute coordinated stage movements and ensemble choreography.' }
+    ],
+    officers: [
+      { role: 'Stage President', name: 'Tigist Mamo', grade: 12 },
+      { role: 'Technical Director', name: 'Abel Kebede', grade: 11 }
+    ],
+    upcomingMeetings: [
+      { id: 'm-1101', title: 'Fall Production Read-Through & Blocking', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Auditorium', agenda: 'Act I scene read-through and initial stage placement.' }
+    ]
+  },
+  {
+    id: 'club-environmental',
+    name: 'Environmental Sustainability & Eco-Action Council',
+    code: 'KB-ENV-12',
+    category: 'Civics & Culture',
+    tagline: 'Campus greening initiatives, renewable energy projects, and ecological conservation.',
+    description: 'Empowering students to champion environmental stewardship across campus and the greater community. Projects include campus recycling optimization, organic gardening, solar array prototyping, and biodiversity conservation campaigns.',
+    advisorName: 'Dr. Almaz Worku',
+    advisorEmail: 'a.worku@kbacademy.edu',
+    advisorTitle: 'Senior Sciences & Sustainability Lead',
+    studentPresident: 'Edomias Tadesse (Gr. 12)',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
+    room: 'Eco-Lab 105',
+    building: 'Von Neumann Science Center',
+    capacity: 30,
+    enrolledCount: 25,
+    gradesEligible: [9, 10, 11, 12],
+    duesPerSemester: 0,
+    prerequisites: 'Passion for ecology, sustainability, and outdoor fieldwork.',
+    coverImage: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&auto=format&fit=crop&q=80',
+    tags: ['Environment', 'Sustainability', 'Eco-Action', 'Conservation', 'Gardening'],
+    status: 'Active',
+    charterYear: 2019,
+    allocatedBudget: 3800,
+    syllabus: [
+      { week: 1, topic: 'Campus Carbon Footprint Auditing', objective: 'Measure electricity and waste output across academic buildings.' },
+      { week: 2, topic: 'Hydroponics & Organic Composting Systems', objective: 'Set up nutrient-film hydroponic stations in Eco-Lab.' }
+    ],
+    officers: [
+      { role: 'Council President', name: 'Edomias Tadesse', grade: 12 },
+      { role: 'Projects Coordinator', name: 'Mekdes Alemayehu', grade: 11 }
+    ],
+    upcomingMeetings: [
+      { id: 'm-1201', title: 'Campus Tree Planting & Garden Bed Prep', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Eco-Lab 105', agenda: 'Prepare saplings for campus south lawn planting.' }
+    ]
+  },
+  {
+    id: 'club-sport',
+    name: 'Varsity Athletics & Tactical Sports Club',
+    code: 'KB-SPT-13',
+    category: 'Athletics & Tactics',
+    tagline: 'Physical fitness, tactical team sports, conditioning, and sportsmanship.',
+    description: 'Promoting athletic excellence, teamwork, strategic positioning, and physical endurance across soccer, basketball, track conditioning, and tactical intramural tournaments. Fosters discipline, leadership, and holistic well-being.',
+    advisorName: 'Coach Daniel Mulugeta',
+    advisorEmail: 'd.mulugeta@kbacademy.edu',
+    advisorTitle: 'Director of Athletics',
+    studentPresident: 'Samuel Tadesse (Gr. 12)',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
+    room: 'Academy Gymnasium & Turf',
+    building: 'Physical Education Center',
+    capacity: 40,
+    enrolledCount: 35,
+    gradesEligible: [9, 10, 11, 12],
+    duesPerSemester: 0,
+    prerequisites: 'Valid physical fitness clearance and sports attire.',
+    coverImage: 'https://images.unsplash.com/photo-1517649763962-0c6232660102?w=800&auto=format&fit=crop&q=80',
+    tags: ['Sports', 'Athletics', 'Fitness', 'Tactics', 'Soccer', 'Basketball'],
+    status: 'Active',
+    charterYear: 2011,
+    allocatedBudget: 6000,
+    syllabus: [
+      { week: 1, topic: 'Cardiovascular Conditioning & Agility Drills', objective: 'Improve speed, stamina, and multidirectional footwork.' },
+      { week: 2, topic: 'Tactical Formations & Team Passing Strategies', objective: 'Implement zonal pressing and offensive transition plays.' }
+    ],
+    officers: [
+      { role: 'Athletic Captain', name: 'Samuel Tadesse', grade: 12 },
+      { role: 'Fitness Lead', name: 'Hanna Bekele', grade: 11 }
+    ],
+    upcomingMeetings: [
+      { id: 'm-1301', title: 'Intramural Championship Tournament Warmup', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Gymnasium', agenda: 'Drills and tournament bracket seedings.' }
+    ]
   }
 ];
 

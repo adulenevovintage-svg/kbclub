@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { JournalModal } from './JournalModal';
 import { Club, Registration, ClubCategory, UpcomingMeeting, UserProfile } from '../types';
 import { 
   Search, 
@@ -72,6 +73,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   const [selectedDay, setSelectedDay] = useState<string>('All');
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
+  const [journalClub, setJournalClub] = useState<Club | null>(null);
 
   const studentIdNumber = student.studentIdNumber || student.id;
 
@@ -129,6 +131,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     'STEM & Technology',
     'Debate & Leadership',
     'Arts & Performance',
+    'Athletics & Tactics',
     'Civics & Culture',
     'Academic Olympiad'
   ];
@@ -689,12 +692,23 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                         )}
 
                         {club && (
-                          <button
-                            onClick={() => onSelectClub(club)}
-                            className="px-3 py-1.5 rounded-lg bg-[#181a22] hover:bg-[#202430] border border-[#2a2e3a] text-xs text-zinc-200 hover:text-white transition-colors"
-                          >
-                            View Syllabus
-                          </button>
+                          <div className="flex items-center gap-2">
+                            {isApproved && (
+                              <button
+                                onClick={() => setJournalClub(club)}
+                                className="px-3 py-1.5 rounded-lg bg-[#c5832b]/10 hover:bg-[#c5832b]/20 border border-[#c5832b]/30 text-xs text-[#e5a93c] transition-colors flex items-center gap-1.5"
+                              >
+                                <FileText className="w-3.5 h-3.5" />
+                                Journal
+                              </button>
+                            )}
+                            <button
+                              onClick={() => onSelectClub(club)}
+                              className="px-3 py-1.5 rounded-lg bg-[#181a22] hover:bg-[#202430] border border-[#2a2e3a] text-xs text-zinc-200 hover:text-white transition-colors"
+                            >
+                              View Syllabus
+                            </button>
+                          </div>
                         )}
 
                         <button
@@ -775,6 +789,15 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             })}
           </div>
         </div>
+      )}
+
+      {journalClub && (
+        <JournalModal
+          club={journalClub}
+          student={student}
+          onClose={() => setJournalClub(null)}
+          onAddToast={onAddToast || (() => {})}
+        />
       )}
     </div>
   );

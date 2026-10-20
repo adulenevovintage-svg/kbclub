@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StudentAccount } from '../types';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 import { AmharicAvatarPicker } from './AmharicAvatarPicker';
 import { generateAmharicAvatarDataUrl, getSuggestedAmharicLetter } from '../utils/amharicAvatars';
 import { DEFAULT_KB_LOGO, handleImageError } from '../utils/imageFallback';
@@ -163,7 +165,8 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
 
     setCreatedAccount(newAccount);
     setMode('id_created');
-    onAddToast('success', 'Account Created & Gmail Verified!', 'Your official Student ID has been generated.');
+    onRegisterSuccess(newAccount);
+    onAddToast('success', 'Account Created & Saved Universally!', 'Your official Student ID has been generated.');
   };
 
   const handleCopyId = () => {
@@ -181,8 +184,8 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
     }
   };
 
-  // Distinct Login Handler: ID Only vs Password Only
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  // Distinct Login Handler: ID Only vs Password Only with Cloud Fallback
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
 
@@ -193,12 +196,31 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
         return;
       }
 
-      // Match by full ID or partial match
-      const matched = registeredAccounts.find(acc => 
+      // 1. Match by full ID or partial match in memory
+      let matched = registeredAccounts.find(acc => 
         acc.studentIdNumber.toLowerCase() === cleanId || 
         acc.id.toLowerCase() === cleanId ||
         acc.studentIdNumber.toLowerCase().includes(cleanId)
       );
+
+      // 2. Direct Cloud Query to Firestore if not found in memory
+      if (!matched) {
+        try {
+          const snap = await getDocs(collection(db, 'kb_academy_student_accounts'));
+          snap.forEach(docSnap => {
+            const data = { id: docSnap.id, ...docSnap.data() } as StudentAccount;
+            if (
+              data.studentIdNumber?.toLowerCase() === cleanId ||
+              data.id?.toLowerCase() === cleanId ||
+              data.studentIdNumber?.toLowerCase().includes(cleanId)
+            ) {
+              matched = data;
+            }
+          });
+        } catch (err) {
+          console.error("Firestore lookup error:", err);
+        }
+      }
 
       if (matched) {
         onAddToast('success', 'Authenticated via Student ID', `Welcome back, ${matched.fullName} (Grade ${matched.grade}-${matched.section})!`);
@@ -217,11 +239,28 @@ export const StudentAuthModal: React.FC<StudentAuthModalProps> = ({
         return;
       }
 
-      const matched = registeredAccounts.find(acc => {
+      let matched = registeredAccounts.find(acc => {
         const matchName = acc.fullName.toLowerCase() === cleanName || acc.firstName.toLowerCase() === cleanName;
         const matchEmail = acc.email.toLowerCase() === cleanName;
         return (matchName || matchEmail) && acc.password === cleanPass;
       });
+
+      // Direct Cloud Query to Firestore if not found in memory
+      if (!matched) {
+        try {
+          const snap = await getDocs(collection(db, 'kb_academy_student_accounts'));
+          snap.forEach(docSnap => {
+            const data = { id: docSnap.id, ...docSnap.data() } as StudentAccount;
+            const matchName = data.fullName?.toLowerCase() === cleanName || data.firstName?.toLowerCase() === cleanName;
+            const matchEmail = data.email?.toLowerCase() === cleanName;
+            if ((matchName || matchEmail) && data.password === cleanPass) {
+              matched = data;
+            }
+          });
+        } catch (err) {
+          console.error("Firestore lookup error:", err);
+        }
+      }
 
       if (matched) {
         onAddToast('success', 'Authenticated via Password', `Welcome back, ${matched.fullName}!`);

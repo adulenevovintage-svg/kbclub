@@ -26,6 +26,15 @@
       },
       "required": ["id", "studentId", "clubId", "status"]
     },
+    "ContentDoc": {
+      "title": "ContentDoc",
+      "description": "Website content and system settings.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" }
+      },
+      "required": ["id"]
+    },
     "JournalEntry": {
       "title": "Journal Entry",
       "description": "A student's note or journal entry for a club activity.",
@@ -47,6 +56,10 @@
     "/kb_academy_registrations/{regId}": {
       "schema": "Registration",
       "description": "All student registrations."
+    },
+    "/kb_academy_content/{docId}": {
+      "schema": "ContentDoc",
+      "description": "Website content and system settings."
     },
     "/journal_entries/{entryId}": {
       "schema": "JournalEntry",

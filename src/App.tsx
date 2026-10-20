@@ -32,6 +32,7 @@ import { RegistrationModal } from './components/RegistrationModal';
 import { NewCharterModal } from './components/NewCharterModal';
 import { NotificationDrawer } from './components/NotificationDrawer';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { AdminEditModal } from './components/AdminEditModal';
 import { StudentAuthModal } from './components/StudentAuthModal';
 import { StudentIDCardModal } from './components/StudentIDCardModal';
 import { StudentPortalEntranceVideoModal } from './components/StudentPortalEntranceVideoModal';
@@ -224,10 +225,42 @@ export default function App() {
   });
 
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isAdminEditModalOpen, setIsAdminEditModalOpen] = useState(false);
   // Admin mode is strictly INACTIVE by default, reserved ONLY for users who input the password via the settings icon
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
   const [isClubOwnerPortalModalOpen, setIsClubOwnerPortalModalOpen] = useState(false);
   const [isEntranceVideoOpen, setIsEntranceVideoOpen] = useState(false);
+
+  // Universal cloud update handlers for Admin / Club Owner
+  const handleUpdateClubs = async (updatedClubs: Club[]) => {
+    setClubs(updatedClubs);
+    const newIds = new Set(updatedClubs.map(c => c.id));
+    for (const c of clubs) {
+      if (!newIds.has(c.id)) {
+        await deleteItemFromFirestore('kb_academy_clubs', c.id);
+      }
+    }
+    for (const c of updatedClubs) {
+      await saveItemToFirestore('kb_academy_clubs', c);
+    }
+  };
+
+  const handleUpdateWebsiteContent = async (content: WebsiteContent) => {
+    setWebsiteContent(content);
+    await saveItemToFirestore('kb_academy_content', { id: 'website_content', ...content });
+  };
+
+  const handleUpdateSettings = async (newSettings: SystemSettings) => {
+    setSettings(newSettings);
+    await saveItemToFirestore('kb_academy_content', { id: 'settings', ...newSettings });
+  };
+
+  const handleUpdateAnnouncements = async (updatedAnnouncements: Announcement[]) => {
+    setAnnouncements(updatedAnnouncements);
+    for (const a of updatedAnnouncements) {
+      await saveItemToFirestore('kb_academy_announcements', a);
+    }
+  };
 
   // Firestore sync & initialization
   useEffect(() => {
@@ -238,6 +271,30 @@ export default function App() {
       await seedInitialDataIfEmpty('kb_academy_announcements', INITIAL_ANNOUNCEMENTS);
       await seedInitialDataIfEmpty('kb_academy_attendance', INITIAL_ATTENDANCE_SESSIONS);
       await seedInitialDataIfEmpty('kb_academy_student_accounts', INITIAL_STUDENT_ACCOUNTS);
+      await seedInitialDataIfEmpty('kb_academy_content', [
+        { id: 'website_content', ...INITIAL_WEBSITE_CONTENT },
+        { id: 'settings', ...INITIAL_SYSTEM_SETTINGS }
+      ]);
+
+      try {
+        const saved = localStorage.getItem('kb_academy_v2_student_accounts');
+        if (saved) {
+          const parsed: StudentAccount[] = JSON.parse(saved);
+          for (const acc of parsed) {
+            await saveItemToFirestore('kb_academy_student_accounts', acc);
+          }
+        }
+        const savedContent = localStorage.getItem('kb_academy_v2_website_content');
+        if (savedContent) {
+          const parsed = JSON.parse(savedContent);
+          await saveItemToFirestore('kb_academy_content', { id: 'website_content', ...parsed });
+        }
+        const savedSettings = localStorage.getItem('kb_academy_v2_settings');
+        if (savedSettings) {
+          const parsed = JSON.parse(savedSettings);
+          await saveItemToFirestore('kb_academy_content', { id: 'settings', ...parsed });
+        }
+      } catch (err) {}
     };
     seedAndSubscribe();
 
@@ -279,6 +336,22 @@ export default function App() {
         });
       }
     });
+    const unsubContent = subscribeToCollection<any>('kb_academy_content', (items) => {
+      const webDoc = items.find(i => i.id === 'website_content');
+      if (webDoc) {
+        const { id, ...rest } = webDoc;
+        setWebsiteContent(prev => ({
+          ...prev,
+          ...rest,
+          kbLogoUrl: sanitizeImageUrl(rest.kbLogoUrl || prev.kbLogoUrl, DEFAULT_KB_LOGO)
+        }));
+      }
+      const setDoc = items.find(i => i.id === 'settings');
+      if (setDoc) {
+        const { id, ...rest } = setDoc;
+        setSettings(prev => ({ ...prev, ...rest }));
+      }
+    });
 
     return () => {
       unsubClubs();
@@ -286,6 +359,7 @@ export default function App() {
       unsubProps();
       unsubAnn();
       unsubStudents();
+      unsubContent();
     };
   }, []);
 
@@ -843,17 +917,23 @@ export default function App() {
           <LandingView
             onEnterRole={handleEnterRole}
             clubs={clubs}
-            onUpdateClubs={setClubs}
+            onUpdateClubs={handleUpdateClubs}
             onSelectClub={(club) => setSelectedClubForDetail(club)}
             websiteContent={websiteContent}
-            onUpdateWebsiteContent={setWebsiteContent}
-            onOpenAdminLogin={() => setIsAdminModalOpen(true)}
+            onUpdateWebsiteContent={handleUpdateWebsiteContent}
+            onOpenAdminLogin={() => {
+              if (isAdminAuthenticated) {
+                setIsAdminEditModalOpen(true);
+              } else {
+                setIsAdminModalOpen(true);
+              }
+            }}
             isAdminAuthenticated={isAdminAuthenticated}
             setIsAdminAuthenticated={setIsAdminAuthenticated}
             onAddToast={addToast}
             onOpenStudentAuth={handleOpenStudentAuth}
             announcements={announcements}
-            onUpdateAnnouncements={setAnnouncements}
+            onUpdateAnnouncements={handleUpdateAnnouncements}
           />
         ) : (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
@@ -881,7 +961,13 @@ export default function App() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setIsAdminModalOpen(true)}
+                    onClick={() => {
+                      if (isAdminAuthenticated) {
+                        setIsAdminEditModalOpen(true);
+                      } else {
+                        setIsAdminModalOpen(true);
+                      }
+                    }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm border ${
                       isAdminAuthenticated 
                         ? 'bg-emerald-600/30 text-emerald-300 border-emerald-500/60'
@@ -890,7 +976,7 @@ export default function App() {
                     id="btn-global-admin-settings"
                   >
                     <Settings className={`w-3.5 h-3.5 ${isAdminAuthenticated ? 'text-emerald-400 animate-spin' : 'text-amber-400'}`} />
-                    <span>{isAdminAuthenticated ? 'Club Owner Mode Active' : 'Club Owner Settings'}</span>
+                    <span>{isAdminAuthenticated ? 'Club Owner Settings (Active)' : 'Club Owner Settings'}</span>
                   </button>
 
                   {isAdminAuthenticated && (
@@ -933,7 +1019,13 @@ export default function App() {
                 onOpenCharterModal={() => setIsNewCharterModalOpen(true)}
                 onDropClub={handleDropClub}
                 onOpenIdCard={() => setIsStudentIDCardModalOpen(true)}
-                onOpenAdminLogin={() => setIsAdminModalOpen(true)}
+                onOpenAdminLogin={() => {
+                  if (isAdminAuthenticated) {
+                    setIsAdminEditModalOpen(true);
+                  } else {
+                    setIsAdminModalOpen(true);
+                  }
+                }}
                 isAdminAuthenticated={isAdminAuthenticated}
                 onOpenClubOwnerPortal={() => setIsClubOwnerPortalModalOpen(true)}
                 onSaveAndExitAdmin={() => {
@@ -971,7 +1063,7 @@ export default function App() {
                 settings={settings}
                 onApproveProposal={handleApproveProposal}
                 onRejectProposal={handleRejectProposal}
-                onUpdateSettings={setSettings}
+                onUpdateSettings={handleUpdateSettings}
                 onUpdateClubCapacity={handleUpdateClubCapacity}
                 onToggleClubStatus={handleToggleClubStatus}
                 onBackToLanding={() => setCurrentView('landing')}
@@ -1039,8 +1131,24 @@ export default function App() {
       <AdminLoginModal
         isOpen={isAdminModalOpen}
         onClose={() => setIsAdminModalOpen(false)}
-        onSuccess={() => setIsAdminAuthenticated(true)}
+        onSuccess={() => {
+          setIsAdminAuthenticated(true);
+          setIsAdminEditModalOpen(true);
+        }}
         onAddToast={addToast}
+      />
+
+      {/* Comprehensive Club Owner & Master Administrator Settings Modal */}
+      <AdminEditModal
+        isOpen={isAdminEditModalOpen}
+        onClose={() => setIsAdminEditModalOpen(false)}
+        websiteContent={websiteContent}
+        onSaveWebsiteContent={handleUpdateWebsiteContent}
+        clubs={clubs}
+        onSaveClubs={handleUpdateClubs}
+        onAddToast={addToast}
+        isAuthenticated={isAdminAuthenticated}
+        setIsAuthenticated={setIsAdminAuthenticated}
       />
 
       {/* Student Registration & Sign-In Modal */}

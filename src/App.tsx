@@ -60,8 +60,15 @@ export default function App() {
   const [studentAccounts, setStudentAccounts] = useState<StudentAccount[]>(() => {
     try {
       const saved = localStorage.getItem('kb_academy_v2_student_accounts');
-      if (saved) return JSON.parse(saved);
-      return INITIAL_STUDENT_ACCOUNTS;
+      let loaded = INITIAL_STUDENT_ACCOUNTS;
+      if (saved) {
+        const parsed: StudentAccount[] = JSON.parse(saved);
+        const map = new Map<string, StudentAccount>();
+        INITIAL_STUDENT_ACCOUNTS.forEach(a => map.set(a.id, a));
+        parsed.forEach(a => map.set(a.id, a));
+        loaded = Array.from(map.values());
+      }
+      return loaded;
     } catch {
       return INITIAL_STUDENT_ACCOUNTS;
     }
@@ -263,7 +270,14 @@ export default function App() {
       }
     });
     const unsubStudents = subscribeToCollection<StudentAccount>('kb_academy_student_accounts', (items) => {
-      if (items.length > 0) setStudentAccounts(items);
+      if (items.length > 0) {
+        setStudentAccounts(prev => {
+          const map = new Map<string, StudentAccount>();
+          prev.forEach(a => map.set(a.id, a));
+          items.forEach(a => map.set(a.id, a));
+          return Array.from(map.values());
+        });
+      }
     });
 
     return () => {

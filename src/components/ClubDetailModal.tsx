@@ -122,15 +122,23 @@ export const ClubDetailModal: React.FC<ClubDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Schedule Conflict or Limit Notice */}
-          {(hasConflict || (isAtLimit && !isEnrolled && !isPending)) && (
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          {/* Registration Limit Notice or Alternating Wednesday Info */}
+          {isAtLimit && !isEnrolled && !isPending && (
+            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold">{hasConflict ? 'Schedule Collision Alert:' : 'Registration Limit Reached:'}</span>{' '}
-                {hasConflict 
-                  ? `This club meets concurrently with your enrolled club ${conflictDetails?.clubName} on ${conflictDetails?.day} (${conflictDetails?.time}). KB Academy requires non-overlapping commitments.`
-                  : 'You have already reached the maximum enrollment limit of 3 clubs.'}
+                <span className="font-bold">Maximum Limit Reached (3 Clubs):</span>{' '}
+                You have reached your 3-club enrollment limit. To register for this club, you must drop an existing enrollment first.
+              </div>
+            </div>
+          )}
+
+          {hasConflict && !isAtLimit && !isEnrolled && !isPending && (
+            <div className="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-200 text-xs flex items-start gap-2.5">
+              <Clock className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-white">Alternating Wednesday Schedule:</span>{' '}
+                This club meets on {club.meetingDay}. Alternating Wednesday sessions are permitted so you can participate in up to 3 clubs concurrently.
               </div>
             </div>
           )}
@@ -231,17 +239,23 @@ export const ClubDetailModal: React.FC<ClubDetailModalProps> = ({
                     onClose();
                     onRegisterClick(club);
                   }}
-                  disabled={hasConflict || (isAtLimit && !isEnrolled && !isPending)}
+                  disabled={isAtLimit && !isEnrolled && !isPending}
                   className={`px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                    (hasConflict || (isAtLimit && !isEnrolled && !isPending))
-                      ? 'bg-[#1f232c] text-zinc-500 cursor-not-allowed'
+                    (isAtLimit && !isEnrolled && !isPending)
+                      ? 'bg-[#1f232c] text-zinc-500 cursor-not-allowed border border-zinc-700/60'
                       : isFull
-                      ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                      : 'bg-[#c5832b] hover:bg-[#a96721] text-white shadow-lg shadow-[#c5832b]/20'
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white cursor-pointer'
+                      : 'bg-[#c5832b] hover:bg-[#a96721] text-white shadow-lg shadow-[#c5832b]/20 cursor-pointer'
                   }`}
                   id="btn-modal-register"
                 >
-                  <span>{isFull ? 'Join Waitlist' : 'Apply / Register Now'}</span>
+                  <span>
+                    {(isAtLimit && !isEnrolled && !isPending)
+                      ? 'Max 3 Clubs Reached'
+                      : isFull
+                      ? 'Join Waitlist'
+                      : 'Apply / Register Now'}
+                  </span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               )}

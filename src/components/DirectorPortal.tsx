@@ -83,7 +83,7 @@ export const DirectorPortal: React.FC<DirectorPortalProps> = ({
   // CSV export handler
   const handleExportRosterCSV = () => {
     const headers = ['Student ID', 'Student Name', 'Grade', 'Email', 'Club Name', 'Meeting Day', 'Meeting Time', 'Status', 'Attendance'];
-    const rows = registrations.map(r => [
+    const rows = registrations.filter(r => r.status === 'enrolled').map(r => [
       r.studentId,
       `"${r.studentName}"`,
       r.studentGrade,

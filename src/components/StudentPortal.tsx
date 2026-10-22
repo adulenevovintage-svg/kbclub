@@ -340,7 +340,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             id="tab-schedule"
           >
             <Calendar className="w-3.5 h-3.5" />
-            Weekly Schedule & Conflicts
+            Weekly Schedule
           </button>
         </div>
       </div>
@@ -412,25 +412,25 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
           </div>
 
           {/* Clubs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredClubs.map(club => {
-              const isEnrolled = myEnrolledClubIds.has(club.id);
-              const isPending = myPendingClubIds.has(club.id);
-              const isFull = club.enrolledCount >= club.capacity;
-              const conflictWith = occupiedTimeSlots.get(club.timeSlotKey);
-              const hasConflict = !!conflictWith && !isEnrolled;
-              const percentFilled = Math.round((club.enrolledCount / club.capacity) * 100);
+          {/* Check student 3-club limit */}
+          {(() => {
+            const isStudentAtLimit = myRegistrations.filter(r => r.status === 'enrolled' || r.status === 'pending').length >= 3;
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredClubs.map(club => {
+                  const isEnrolled = myEnrolledClubIds.has(club.id);
+                  const isPending = myPendingClubIds.has(club.id);
+                  const isFull = club.enrolledCount >= club.capacity;
+                  const conflictWith = occupiedTimeSlots.get(club.timeSlotKey);
+                  const hasSharedDay = !!conflictWith && !isEnrolled;
+                  const percentFilled = Math.round((club.enrolledCount / club.capacity) * 100);
 
-              return (
-                <div
-                  key={club.id}
-                  className={`rounded-2xl bg-[#12141a] border transition-all flex flex-col justify-between overflow-hidden shadow-md hover:shadow-xl ${
-                    hasConflict
-                      ? 'border-amber-500/40 bg-gradient-to-b from-[#161412] to-[#12141a]'
-                      : 'border-[#232730] hover:border-[#c5832b]/60'
-                  }`}
-                  id={`club-card-${club.id}`}
-                >
+                  return (
+                    <div
+                      key={club.id}
+                      className="rounded-2xl bg-[#12141a] border border-[#232730] hover:border-[#c5832b]/60 transition-all flex flex-col justify-between overflow-hidden shadow-md hover:shadow-xl"
+                      id={`club-card-${club.id}`}
+                    >
                   <div>
                     {/* Cover image */}
                     <div className="relative h-40 w-full overflow-hidden bg-zinc-900 group cursor-pointer" onClick={() => onSelectClub(club)}>
@@ -495,13 +495,12 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                         <span>Dues: <strong className="text-zinc-200">${club.duesPerSemester}</strong></span>
                       </div>
 
-                      {/* Schedule Conflict Notice if detected */}
-                      {hasConflict && (
-                        <div className="mt-3 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] flex items-start gap-2">
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                      {/* Flexible / Alternating Wednesday Schedule Notice */}
+                      {hasSharedDay && (
+                        <div className="mt-3 p-2 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-200 text-[11px] flex items-start gap-2">
+                          <Clock className="w-3.5 h-3.5 text-sky-400 shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-semibold">Schedule Conflict:</span> Overlaps with your enrolled club{' '}
-                            <strong>{conflictWith.clubName}</strong> ({conflictWith.day} {conflictWith.time}).
+                            <span className="font-semibold text-white">Alternating {club.meetingDay}:</span> Same day as <strong>{conflictWith.clubName}</strong>. Alternating weeks permitted (up to 3 clubs).
                           </div>
                         </div>
                       )}
@@ -551,17 +550,18 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                         ) : (
                           <button
                             onClick={() => onRegisterClick(club)}
-                            disabled={hasConflict}
+                            disabled={isStudentAtLimit}
                             className={`py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                              hasConflict
-                                ? 'bg-[#1f232c] text-zinc-500 cursor-not-allowed'
+                              isStudentAtLimit
+                                ? 'bg-[#1f232c] text-zinc-500 cursor-not-allowed border border-zinc-700/60'
                                 : isFull
-                                ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                                : 'bg-[#c5832b] hover:bg-[#a96721] text-white shadow-sm shadow-[#c5832b]/20'
+                                ? 'bg-amber-600 hover:bg-amber-700 text-white cursor-pointer'
+                                : 'bg-[#c5832b] hover:bg-[#a96721] text-white shadow-sm shadow-[#c5832b]/20 cursor-pointer'
                             }`}
                             id={`btn-register-${club.id}`}
+                            title={isStudentAtLimit ? 'Maximum limit of 3 clubs reached' : undefined}
                           >
-                            <span>{isFull ? 'Waitlist' : 'Register'}</span>
+                            <span>{isStudentAtLimit ? 'Limit (3/3)' : isFull ? 'Waitlist' : 'Register'}</span>
                             <ChevronRight className="w-3 h-3" />
                           </button>
                         )}
@@ -572,6 +572,8 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               );
             })}
           </div>
+          );
+        })()}
 
           {filteredClubs.length === 0 && (
             <div className="p-12 text-center rounded-2xl bg-[#12141a] border border-[#232730]">

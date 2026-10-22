@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   UserRole, 
   Club, 
@@ -136,11 +136,13 @@ export default function App() {
   const [registrations, setRegistrations] = useState<Registration[]>(() => {
     try {
       const saved = localStorage.getItem('kb_academy_v2_registrations');
-      if (saved) return JSON.parse(saved);
-      localStorage.removeItem('kb_academy_registrations');
-      return INITIAL_REGISTRATIONS;
+      if (saved) {
+        const parsed: Registration[] = JSON.parse(saved);
+        return parsed.filter(r => !r.id.startsWith('reg-00') && !r.studentId.startsWith('stu-10'));
+      }
+      return [];
     } catch {
-      return INITIAL_REGISTRATIONS;
+      return [];
     }
   });
 
@@ -266,7 +268,6 @@ export default function App() {
   useEffect(() => {
     const seedAndSubscribe = async () => {
       await seedInitialDataIfEmpty('kb_academy_clubs', INITIAL_CLUBS);
-      await seedInitialDataIfEmpty('kb_academy_registrations', INITIAL_REGISTRATIONS);
       await seedInitialDataIfEmpty('kb_academy_proposals', INITIAL_CHARTER_PROPOSALS);
       await seedInitialDataIfEmpty('kb_academy_announcements', INITIAL_ANNOUNCEMENTS);
       await seedInitialDataIfEmpty('kb_academy_attendance', INITIAL_ATTENDANCE_SESSIONS);
@@ -294,6 +295,12 @@ export default function App() {
           const parsed = JSON.parse(savedSettings);
           await saveItemToFirestore('kb_academy_content', { id: 'settings', ...parsed });
         }
+        const savedRegs = localStorage.getItem('kb_academy_v2_registrations');
+        if (savedRegs) {
+          const parsed: Registration[] = JSON.parse(savedRegs);
+          const realOnly = parsed.filter(r => !r.id.startsWith('reg-00') && !r.studentId.startsWith('stu-10'));
+          localStorage.setItem('kb_academy_v2_registrations', JSON.stringify(realOnly));
+        }
       } catch (err) {}
     };
     seedAndSubscribe();
@@ -310,7 +317,8 @@ export default function App() {
       }
     });
     const unsubRegs = subscribeToCollection<Registration>('kb_academy_registrations', (items) => {
-      if (items.length > 0) setRegistrations(items);
+      const realOnly = items.filter(r => !r.id.startsWith('reg-00') && !r.studentId.startsWith('stu-10'));
+      setRegistrations(realOnly);
     });
     const unsubProps = subscribeToCollection<ClubCharterProposal>('kb_academy_proposals', (items) => {
       if (items.length > 0) setProposals(items);
@@ -893,6 +901,14 @@ export default function App() {
     ? registrations.some(r => r.clubId === selectedClubForDetail.id && r.studentId === users.student.id && r.status === 'pending')
     : false;
 
+  // Accurate real-time enrolled count based only on officially accepted registrations
+  const displayClubs = useMemo(() => {
+    return clubs.map(club => ({
+      ...club,
+      enrolledCount: registrations.filter(r => r.clubId === club.id && r.status === 'enrolled').length
+    }));
+  }, [clubs, registrations]);
+
   return (
     <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
       currentView === 'landing' ? 'bg-white text-zinc-900' : 'bg-gradient-to-br from-[#120a22] via-[#090614] to-[#05040a] text-[#f4f4f5]'
@@ -916,7 +932,7 @@ export default function App() {
         {currentView === 'landing' ? (
           <LandingView
             onEnterRole={handleEnterRole}
-            clubs={clubs}
+            clubs={displayClubs}
             onUpdateClubs={handleUpdateClubs}
             onSelectClub={(club) => setSelectedClubForDetail(club)}
             websiteContent={websiteContent}
@@ -1012,7 +1028,7 @@ export default function App() {
             {activeRole === 'student' && (
               <StudentPortal
                 student={users.student}
-                clubs={clubs}
+                clubs={displayClubs}
                 registrations={registrations}
                 onRegisterClick={(club) => setSelectedClubForRegistration(club)}
                 onSelectClub={(club) => setSelectedClubForDetail(club)}
@@ -1041,7 +1057,7 @@ export default function App() {
             {activeRole === 'teacher' && (
               <TeacherPortal
                 teacher={users.teacher}
-                clubs={clubs}
+                clubs={displayClubs}
                 registrations={registrations}
                 attendanceSessions={attendanceSessions}
                 announcements={announcements}
@@ -1057,7 +1073,7 @@ export default function App() {
             {activeRole === 'director' && (
               <DirectorPortal
                 director={users.director}
-                clubs={clubs}
+                clubs={displayClubs}
                 registrations={registrations}
                 proposals={proposals}
                 settings={settings}
@@ -1090,7 +1106,7 @@ export default function App() {
       {/* 3. Modals and Overlays */}
       {selectedClubForDetail && (
         <ClubDetailModal
-          club={selectedClubForDetail}
+          club={displayClubs.find((c: Club) => c.id === selectedClubForDetail.id) || selectedClubForDetail}
           onClose={() => setSelectedClubForDetail(null)}
           onRegisterClick={(club) => {
             setSelectedClubForRegistration(club);
@@ -1098,14 +1114,14 @@ export default function App() {
           isEnrolled={isDetailClubEnrolled}
           isPending={isDetailClubPending}
           hasConflict={!!detailClubConflict && !isDetailClubEnrolled}
-          isAtLimit={registrations.filter(r => r.status === 'enrolled' && r.studentId === users.student.id).length >= 3}
+          isAtLimit={registrations.filter(r => (r.status === 'enrolled' || r.status === 'pending') && r.studentId === users.student.id).length >= 3}
           conflictDetails={detailClubConflict}
         />
       )}
 
       {selectedClubForRegistration && (
         <RegistrationModal
-          club={selectedClubForRegistration}
+          club={displayClubs.find((c: Club) => c.id === selectedClubForRegistration.id) || selectedClubForRegistration}
           student={users.student}
           onClose={() => setSelectedClubForRegistration(null)}
           onSubmit={handleRegisterSubmit}
@@ -1175,7 +1191,7 @@ export default function App() {
         isOpen={isClubOwnerPortalModalOpen}
         onClose={() => setIsClubOwnerPortalModalOpen(false)}
         registrations={registrations}
-        clubs={clubs}
+        clubs={displayClubs}
         onApprove={handleClubOwnerApproveRegistration}
         onReject={handleClubOwnerRejectRegistration}
       />

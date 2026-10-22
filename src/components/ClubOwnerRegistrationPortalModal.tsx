@@ -20,21 +20,22 @@ export const ClubOwnerRegistrationPortalModal: React.FC<ClubOwnerRegistrationPor
   onApprove,
   onReject,
 }) => {
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'enrolled'>('pending');
+  const [filterStatus, setFilterStatus] = useState<'pending' | 'enrolled'>('pending');
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!isOpen) return null;
 
+  const pendingCount = registrations.filter(r => r.status === 'pending').length;
+  const enrolledCount = registrations.filter(r => r.status === 'enrolled').length;
+
   const filteredRegistrations = registrations.filter(r => {
-    const matchesStatus = filterStatus === 'all' || r.status === filterStatus;
+    const matchesStatus = r.status === filterStatus;
     const matchesSearch = 
       r.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.clubName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.studentEmail.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
-
-  const pendingCount = registrations.filter(r => r.status === 'pending').length;
 
   const exportToExcel = () => {
     const enrolledStudents = registrations
@@ -50,7 +51,7 @@ export const ClubOwnerRegistrationPortalModal: React.FC<ClubOwnerRegistrationPor
     const worksheet = XLSX.utils.json_to_sheet(enrolledStudents);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Enrolled Students");
-    XLSX.writeFile(workbook, "Enrolled_Students.xlsx");
+    XLSX.writeFile(workbook, "Accepted_Club_Records.xlsx");
   };
 
   return (
@@ -68,7 +69,7 @@ export const ClubOwnerRegistrationPortalModal: React.FC<ClubOwnerRegistrationPor
                 Club Owner Registration Review Portal
               </h2>
               <p className="text-xs text-zinc-400">
-                Universal Student Registration Requests & Admissions Management (Firebase Synced)
+                Live Real-Time Registration Requests & Official Accepted Student Records
               </p>
             </div>
           </div>
@@ -85,41 +86,37 @@ export const ClubOwnerRegistrationPortalModal: React.FC<ClubOwnerRegistrationPor
           <div className="flex items-center gap-2">
             <button
               onClick={() => setFilterStatus('pending')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 filterStatus === 'pending'
                   ? 'bg-amber-500 text-zinc-950 shadow-md'
                   : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
               }`}
             >
-              Pending Requests ({pendingCount})
+              <span>Live Asked Requests</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${filterStatus === 'pending' ? 'bg-zinc-950 text-amber-400' : 'bg-zinc-700 text-zinc-200'}`}>
+                {pendingCount}
+              </span>
             </button>
             <button
               onClick={() => setFilterStatus('enrolled')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 filterStatus === 'enrolled'
                   ? 'bg-emerald-600 text-white shadow-md'
                   : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
               }`}
             >
-              Accepted / Enrolled
+              <span>All Accepted Records</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${filterStatus === 'enrolled' ? 'bg-emerald-800 text-emerald-100' : 'bg-zinc-700 text-zinc-200'}`}>
+                {enrolledCount}
+              </span>
             </button>
-            <button
-              onClick={() => setFilterStatus('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                filterStatus === 'all'
-                  ? 'bg-zinc-700 text-white shadow-md'
-                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-              }`}
-            >
-              All Records ({registrations.length})
-            </button>
-            {filterStatus === 'all' && (
+            {filterStatus === 'enrolled' && enrolledCount > 0 && (
               <button
                 onClick={exportToExcel}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-all cursor-pointer shadow-md"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-all cursor-pointer shadow-md"
               >
                 <FileDown className="w-3.5 h-3.5" />
-                Export
+                <span>Export Excel</span>
               </button>
             )}
           </div>
@@ -141,8 +138,14 @@ export const ClubOwnerRegistrationPortalModal: React.FC<ClubOwnerRegistrationPor
           {filteredRegistrations.length === 0 ? (
             <div className="text-center py-16 text-zinc-500">
               <Users className="w-12 h-12 mx-auto mb-3 opacity-40 text-amber-400" />
-              <p className="text-sm font-medium text-zinc-400">No student registration requests found.</p>
-              <p className="text-xs text-zinc-600 mt-1">Students registering from the catalog will instantly appear here.</p>
+              <p className="text-sm font-medium text-zinc-400">
+                {filterStatus === 'pending' ? 'No pending registration requests.' : 'No accepted student records yet.'}
+              </p>
+              <p className="text-xs text-zinc-600 mt-1">
+                {filterStatus === 'pending' 
+                  ? 'Real-time student applications submitted from the website will appear here instantly for review.'
+                  : 'Review and accept live asked requests to officially enroll students in records.'}
+              </p>
             </div>
           ) : (
             filteredRegistrations.map((reg) => {

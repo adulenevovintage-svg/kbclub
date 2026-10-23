@@ -574,6 +574,82 @@ const rawClubs: Club[] = [
     upcomingMeetings: [
       { id: 'm-1301', title: 'Intramural Championship Tournament Warmup', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Gymnasium', agenda: 'Drills and tournament bracket seedings.' }
     ]
+  },
+  {
+    id: 'club-charity',
+    name: 'Community Outreach & Humanitarian Charity Club',
+    code: 'KB-CHR-14',
+    category: 'Civics & Culture',
+    tagline: 'Compassionate service, community fundraising, food drives, and humanitarian volunteerism.',
+    description: 'Dedicated to fostering empathy, altruism, and active social responsibility. The Charity Club organizes community donation drives, hospital visits, educational tutoring for underserved children, and humanitarian campaigns to support families in need across our local and regional communities.',
+    advisorName: 'Mrs. Hiwot Tadesse',
+    advisorEmail: 'h.tadesse@kbacademy.edu',
+    advisorTitle: 'Dean of Student Affairs & Community Engagement',
+    studentPresident: 'Lydia Yohannes (Gr. 12)',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
+    room: 'Social Impact Hall 108',
+    building: 'Humanities & Civic Leadership Hall',
+    capacity: 35,
+    enrolledCount: 0,
+    gradesEligible: [9, 10, 11, 12],
+    duesPerSemester: 0,
+    prerequisites: 'Commitment to humanitarian service and community engagement.',
+    coverImage: 'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&auto=format&fit=crop&q=80',
+    tags: ['Charity', 'Humanitarian', 'Community Service', 'Philanthropy', 'Volunteer'],
+    status: 'Active',
+    charterYear: 2020,
+    allocatedBudget: 4500,
+    syllabus: [
+      { week: 1, topic: 'Community Needs Assessment & Drive Planning', objective: 'Identify regional partners and design the fall clothing and book drive.' },
+      { week: 2, topic: 'Fundraising Tactics & Volunteer Coordination', objective: 'Organize campus charity bake sale and assign volunteer shifts.' }
+    ],
+    officers: [
+      { role: 'Club President', name: 'Lydia Yohannes', grade: 12 },
+      { role: 'Outreach Director', name: 'Natnael Girma', grade: 11 }
+    ],
+    upcomingMeetings: [
+      { id: 'm-1401', title: 'Annual Community Clothing & Book Drive Kickoff', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Social Impact Hall 108', agenda: 'Logistics coordination and donation bin deployment.' }
+    ]
+  },
+  {
+    id: 'club-agriculture',
+    name: 'Agricultural Science & Urban Farming Syndicate',
+    code: 'KB-AGR-15',
+    category: 'Civics & Culture',
+    tagline: 'Sustainable agronomy, hydroponics, soil microbiology, and modern urban farming technologies.',
+    description: 'Exploring the intersection of modern agricultural science, precision farming, greenhouse management, and sustainable crop cultivation. Members maintain our campus test plots, operate hydroponic and aquaponic towers, and study drought-resistant seed genetics to advance food security.',
+    advisorName: 'Dr. Berhanu Mengistu',
+    advisorEmail: 'b.mengistu@kbacademy.edu',
+    advisorTitle: 'Head of Agricultural Sciences & Botanical Research',
+    studentPresident: 'Yonas Tefera (Gr. 11)',
+    meetingDay: 'Wednesday',
+    meetingTime: '8:00 AM – 9:15 AM',
+    timeSlotKey: 'Wednesday-0800',
+    room: 'Rooftop Conservatory & Agricultural Research Plot B',
+    building: 'Botanical Conservatory & Biosciences Wing',
+    capacity: 30,
+    enrolledCount: 0,
+    gradesEligible: [9, 10, 11, 12],
+    duesPerSemester: 0,
+    prerequisites: 'Interest in botanical science, horticulture, and sustainable food systems.',
+    coverImage: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb2252a?w=800&auto=format&fit=crop&q=80',
+    tags: ['Agriculture', 'Urban Farming', 'Hydroponics', 'Botany', 'Sustainability', 'Agronomy'],
+    status: 'Active',
+    charterYear: 2021,
+    allocatedBudget: 5200,
+    syllabus: [
+      { week: 1, topic: 'Soil Microbiology & Nutrient Cycling', objective: 'Analyze soil pH and organic matter composition in campus research beds.' },
+      { week: 2, topic: 'Automated Drip Irrigation & Hydroponic Balances', objective: 'Calibrate water nutrient sensors and test vertical farming towers.' }
+    ],
+    officers: [
+      { role: 'Syndicate Lead', name: 'Yonas Tefera', grade: 11 },
+      { role: 'Greenhouse Manager', name: 'Hellen Kebede', grade: 10 }
+    ],
+    upcomingMeetings: [
+      { id: 'm-1501', title: 'Hydroponic Tower Seeding & Crop Rotation Planning', date: 'Next Wednesday, 8:00 AM', time: '8:00 AM - 9:15 AM', room: 'Rooftop Conservatory', agenda: 'Planting heirloom vegetable seeds and monitoring nutrient flow rates.' }
+    ]
   }
 ];
 

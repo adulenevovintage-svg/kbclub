@@ -268,6 +268,11 @@ export default function App() {
   useEffect(() => {
     const seedAndSubscribe = async () => {
       await seedInitialDataIfEmpty('kb_academy_clubs', INITIAL_CLUBS);
+      for (const club of INITIAL_CLUBS) {
+        if (club.id === 'club-charity' || club.id === 'club-agriculture') {
+          await saveItemToFirestore('kb_academy_clubs', club);
+        }
+      }
       await seedInitialDataIfEmpty('kb_academy_proposals', INITIAL_CHARTER_PROPOSALS);
       await seedInitialDataIfEmpty('kb_academy_announcements', INITIAL_ANNOUNCEMENTS);
       await seedInitialDataIfEmpty('kb_academy_attendance', INITIAL_ATTENDANCE_SESSIONS);

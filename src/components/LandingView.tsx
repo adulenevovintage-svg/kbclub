@@ -13,6 +13,7 @@ import {
   CheckCircle, 
   Zap, 
   ChevronRight, 
+  ChevronDown, 
   TrendingUp, 
   Clock, 
   MapPin, 
@@ -100,6 +101,8 @@ export const LandingView: React.FC<LandingViewProps> = ({
     currentUrl: '',
     title: ''
   });
+
+  const [showAllLandingClubs, setShowAllLandingClubs] = useState(false);
 
   // Handler for updating a specific operational pillar
   const handleUpdatePillar = (id: string, field: 'title' | 'description', value: string) => {
@@ -648,7 +651,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {clubs.slice(0, canLiveEdit ? 8 : 4).map((club) => {
+          {clubs.slice(0, canLiveEdit ? clubs.length : (showAllLandingClubs ? clubs.length : 8)).map((club) => {
             const seatsLeft = club.capacity - club.enrolledCount;
             const percentFilled = Math.round((club.enrolledCount / club.capacity) * 100);
 
@@ -819,6 +822,18 @@ export const LandingView: React.FC<LandingViewProps> = ({
             );
           })}
         </div>
+
+        {clubs.length > 8 && !canLiveEdit && (
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => setShowAllLandingClubs(!showAllLandingClubs)}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl border border-zinc-300 hover:border-[#c5832b] bg-white hover:bg-amber-50/50 text-xs font-bold text-zinc-700 hover:text-[#b46d1c] transition-all shadow-sm cursor-pointer"
+            >
+              <span>{showAllLandingClubs ? 'Show Fewer Clubs' : `View All Available Clubs (${clubs.length})`}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showAllLandingClubs ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+        )}
       </section>
 
       {/* 4. Leadership & Academy Vision (DIRECT IN-PAGE EDITABLE) */}
